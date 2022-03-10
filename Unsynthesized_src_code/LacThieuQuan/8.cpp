@@ -1,4 +1,6 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include<cstring>
+#include<fstream>
 using namespace std;
 
 struct _time {
