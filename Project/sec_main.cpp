@@ -240,135 +240,69 @@ Registration_Session create_Registration_Session(){
     return S;
 }
 
-void update_Course(Year *year){
-    string s;
-    cout << "Semester: ";
-    cin >> s;
-    Semester* sem = find_semester(year, s);
-    while (!sem) {
-        cout << "Semester not found! Try again: ";
-        cin >> s;
-        sem = find_semester(year, s);
-    }
-    cout << "Subject: ";
-    cin >> s;
-    Subject* Sub = find_Subject(sem->pSubject, s);
-    while (!Sub) {
-        cout << "Subject not found! Try again: ";
-        cin >> s;
-        Sub = find_Subject(sem->pSubject, s);
-    }
-    
-    cout << "Course ID: " ;
-    cin >> s;
-    Course* cour = find_Course(year->pSemester->pSubject->pCourse, s);
-    while (!cour || (cour->CourseID != s && !cour->pNext_Course)) {
-        cout << "Course not found! Try again: ";
-        cin >> s;
-        cour = find_Course(year->pSemester->pSubject->pCourse, s);
-    }
-
-    cout << "Update the following details: " << endl;
-    cout << "ID: ";
-    cin >> cour->CourseID;
-    cout << "Number of credits: ";
-    cin >> cour->Number_of_Credits;
-    cout << "Maximum number of students in Course: ";
-    cin >> cour->Max_Student;
-    cout << "Course name: ";
-    cin >> cour->Course_Name;
-    cout << "Teacher name: ";
-    cin >> cour->Teacher_Name;
-    cout << "Time performing: " << endl;
-    cout << "Day 1: ";
-    cin >> cour->Day1;
-    cout << "Session 1: ";
-    cin >> cour->Session1;
-    cout << "Day 2: ";
-    cin >> cour->Day2;
-    cout << "Session 2: ";
-    cin >> cour->Session2;
-    cout << "Start day: ";
-    cin >> cour->Start_Day;
-    cout << "End day: ";
-    cin >> cour->End_Day;
-    cour->pNext_Course = nullptr;
-    cout << "Course added!" << endl;
-
-/*
-    Year *pCur_Year;
-    string find_year = "";
-    do{
-        pCur_Year = year;
-        cout << "academic year to import semester (ex:2020-2021): ";
-        cin >> find_year;
-
-        while (pCur_Year != NULL && find_year != pCur_Year->name)
-            pCur_Year = pCur_Year->pNext_Year;
-    } while (pCur_Year == NULL);
-
-    Semester *pCur_Semester;
-    string find_Semester;
-    do{
-        pCur_Semester = pCur_Year->pSemester;
-        cout << "semester to import subject (ex: 1, 2, 3): ";
-        cin >> find_Semester;
-
-        while (pCur_Semester != NULL && find_Semester != pCur_Semester->name)
-            pCur_Semester = pCur_Semester->pNext_Semester;
-    } while (pCur_Semester == NULL);
-
-    Subject *pCur_Subject;
-    string find_Subject;
-    do{
-        pCur_Subject = pCur_Semester->pSubject;
-        cout << "subject to update course: ";
-        cin >> find_Subject;
-
-        while (pCur_Subject != NULL && find_Subject != pCur_Subject->name)
-            pCur_Subject = pCur_Subject->pNext_Subject;
-    } while (pCur_Subject == NULL);
-
-    Course *pCur_Course;
-    string find_Course = "";
-    
-    do{
-        pCur_Course = pCur_Subject->pCourse;
-        cout << "course to update: ";
-        cin >> find_Course;
-
-        while (pCur_Course != NULL && find_Course != pCur_Course->Course_Name){
-            pCur_Course = pCur_Course->pNext_Course;
-        }
-    }while (pCur_Course == NULL);
-    
-    //course id, course name, teacher name, number of credits, 
-    //the maximum number of students (default 50), day, and the session
-    cout << "Update course: " << endl;
-    cout << "Course ID: "; 
-    cin >> pCur_Course->CourseID;
-    cout << "Course name: ";
-    cin >> pCur_Course->Course_Name;
-    cout << "Teacher name: ";
-    cin >> pCur_Course->Teacher_Name;
-    cout << "Number of credit: ";
-    cin >> pCur_Course->Number_of_Credits;
-    cout << "Maximum student: ";
-    cin >> pCur_Course->Max_Student;
-    // sao lai phai co start day, end day cho course?
-    cout << "Start day: ";
-    cin >> pCur_Course->Start_Day;
-    cout << "End day: ";
-    cin >> pCur_Course->End_Day;
-    cout << "First weekday (MON/TUE...): ";
-    cin >> pCur_Course->Day1;
-    cout << "Session for first weekday (S1/ S2/ S3/ S4): ";
-    cin >> pCur_Course->Session1;
-    cout << "Second weekday (MON/TUE...): : ";
-    cin >> pCur_Course->Day2;
-    cout << "Session for second weekday (S1/ S2/ S3/ S4): ";
-    cin >> pCur_Course->Session2;
-*/
+// only able to update course for latest semester
+void Update_Course(Year *year){
+	while (year->pNext_Year)
+		year = year->pNext_Year;
+	Semester *pCurSem = year->pSemester;
+	while (pCurSem->pNext_Semester)
+		pCurSem = pCurSem->pNext_Semester;
+	
+	
+	bool exist = true;
+	Subject *pCurSub = NULL;
+	string inSub = "";
+	do{
+		exist = true;
+		cout << "Enter subject: ";
+		cin >> inSub;
+		
+		if (inSub == "0")
+			return;
+		
+		pCurSub = pCurSem->pSubject;
+		// find subject
+		while (pCurSub && pCurSub->name != inSub)
+			pCurSub = pCurSub->pNext_Subject;
+		if (pCurSub == NULL){
+			cout << "Subject does not exist.\n";
+			exist = false;
+		}
+		else{
+			exist = true;
+			string inCourse;
+			Course *pCurCourse = NULL; ////////
+			do{
+				cout << "Enter course ID: ";
+				cin >> inCourse;
+				if (inCourse == "0")
+					return;
+				
+				pCurCourse = pCurSub->pCourse;
+				// find course
+				while (pCurCourse && pCurCourse->CourseID != inCourse)
+					pCurCourse = pCurCourse->pNext_Course;
+				if (pCurCourse == NULL){
+					cout << "Course does not exist.\n";
+					exist = false;
+				}
+				else{
+					cout << "Update the following information: \n";
+					cout << "Course ID: "; cin >> pCurCourse->CourseID; 
+					cout << "Course name: "; cin >> pCurCourse->Course_Name;
+					cout << "Teacher name: "; cin >> pCurCourse->Teacher_Name;
+					cout << "Number of credits: "; cin >> pCurCourse->Number_of_Credits;
+					cout << "Maximum students: "; cin >> pCurCourse->Max_Student;
+					cout << "Start day: "; cin >> pCurCourse->Start_Day;
+					cout << "End day: "; cin >> pCurCourse->End_Day;
+					cout << "Day 1: "; cin >> pCurCourse->Day1;
+					cout << "Session 1: "; cin >> pCurCourse->Session1;
+					cout << "Day 2: "; cin >> pCurCourse->Day2;
+					cout << "Session 2: "; cin >> pCurCourse->Session2;
+				}
+			}while (!exist);
+		}
+	}while (!exist);
 }
 
 void Print_Year(Year *year)
@@ -550,7 +484,8 @@ void Create_Student(Year* &year){
     filein.close();
 }
 
-void View_Student_In_Class(Year *year){
+// function 18
+void View_Student_In_Class(Year *year){ 
 	string inClass;
 	string findYear = ""; 
 	Year *pCurYear = NULL;
@@ -565,7 +500,7 @@ void View_Student_In_Class(Year *year){
 		
 		findYear = inClass.substr(0, 2); // strname.substr(start_point, number_of_character)
 		pCurYear = year;
-		// find year
+		// find year from class. Ex: 20CLC >>> 2020-2021
 		while (pCurYear && (pCurYear->name).substr(0, 2) != findYear)
 			pCurYear = pCurYear->pNext_Year;
 		if (pCurYear == NULL){
@@ -574,7 +509,7 @@ void View_Student_In_Class(Year *year){
 		}
 		else{
 			Class *pCurClass = pCurYear->pClass;
-			// find class
+			// find class from its name
 			while (pCurClass && pCurClass->name != inClass)
 				pCurClass = pCurClass->pNext_Class;
 			if (pCurClass == NULL){
@@ -630,7 +565,7 @@ void solve() {
         if (choose == 9) add_Subject(year);
         if (choose == 10) add_Course(year);
         if (choose == 11) view_list_Courses(year);
-        if (choose == 12) update_Course(year);
+        if (choose == 12) Update_Course(year);
         if (choose == 13) delete_Course(year);
 
     }while(choose != 14);
