@@ -533,6 +533,62 @@ void View_Student_In_Class(Year *year){
 	} while (!exist);
 }
 
+struct Semester{
+    string name;
+    Semester* pNext_Semester;
+    Course* pCourse;
+};
+
+// 18
+void View_Student_In_Class(Year *year){
+	string inClass;
+	string findYear = ""; 
+	Year *pCurYear = NULL;
+	bool exist = true;
+	do{
+		exist = true;
+		cout << "Enter class: ";
+		cin >> inClass;
+		
+		// Enter '0' to stop this function
+		if (inClass == "0")
+			return;
+		
+		findYear = inClass.substr(0, 2); // strname.substr(start_point, number_of_character)
+		pCurYear = year;
+		// find year
+		while (pCurYear && (pCurYear->name).substr(0, 2) != findYear)
+			pCurYear = pCurYear->pNext_Year;
+		if (pCurYear == NULL){
+			cout << "Class does not exist.\n";
+			exist = false;
+		}
+		else{
+			Class *pCurClass = pCurYear->pClass;
+			// find class
+			while (pCurClass && pCurClass->name != inClass)
+				pCurClass = pCurClass->pNext_Class;
+			if (pCurClass == NULL){
+				cout << "Class does not exist.\n";
+				exist = false;
+			}
+			else{
+				cout << "No\tStudent ID\tFirst Name\tLast Name\tGender\tSocial ID\n";
+				Student *pCurStudent = pCurClass->pStudent;
+				while (pCurStudent){
+					cout << pCurStudent->No << '\t';
+					cout << pCurStudent->StudentID << '\t';
+					cout << pCurStudent->FirstName << '\t';
+					cout << pCurStudent->LastName << '\t';
+					cout << pCurStudent->Gender << '\t';
+					cout << pCurStudent->SocialID << '\n';
+					pCurStudent = pCurStudent->pNext_Student;
+				}
+			}
+		}
+	} while (!exist);
+}
+
 void solve() {
     Year* year = NULL;
     int choose;
