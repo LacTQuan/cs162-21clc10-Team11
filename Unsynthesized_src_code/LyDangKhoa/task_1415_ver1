@@ -1,0 +1,10 @@
+Course* find_Enrolled_Course(Course* pEnroll, string enroll_name){
+    if(!pEnroll) return NULL;
+    if(pEnroll->Enrolled_Course_Name == enroll_name)
+        return pEnroll;
+    while(pEnroll->pNext_Enrolled_Course && pEnroll->pNext_Enrolled_Course->Enrolled_Course_Name != enroll_name)
+        pEnroll = pEnroll->pNext_Enrolled_Course;
+    if(pEnroll->pNext_Enrolled_Course->Enrolled_Course_Name == enroll_name)
+        return pEnroll;
+    else return NULL;
+}
