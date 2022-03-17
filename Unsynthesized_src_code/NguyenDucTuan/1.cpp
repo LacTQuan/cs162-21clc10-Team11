@@ -87,4 +87,3 @@ void Create_Student(Class *classes){
     
     filein.close();
 }
-
