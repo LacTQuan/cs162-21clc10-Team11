@@ -73,15 +73,14 @@ Course* find_Course(Course* pCourse, string ID);
 void delete_Course(Year* year);
 void create_Semester(Year *year);
 Registration_Session create_Registration_Session();
-void Update_Course(Year *year);
+void update_Course(Year *year);
 void Print_Year(Year *year);
 void Print_Class(Year *year);
 void Print_Student(Year *year);
 void Create_Year(Year* &year);
 void Create_Class(Year* &year);
 void Create_Student(Year* &year);
-void View_Student_In_Class(Year *year); // 18
-void View_Student_In_Course(Year *year); // 20
+
 
 void solve();
 

@@ -87,3 +87,86 @@ void Create_Student(Class *classes){
     
     filein.close();
 }
+void Print_Year(Year *year)
+{
+    if(year == NULL) {
+        return;
+    }
+    Year *pCur_Year = year;
+    while (pCur_Year != NULL)
+    {
+        cout << pCur_Year->name << " ";
+        pCur_Year = pCur_Year->pNext_Year;
+    }
+    cout<<endl;
+}
+void Print_Class(Year *year)
+{
+    Year* pCur_Year;
+    do{
+        pCur_Year = year;
+        string find_year;
+        cout<<"academic year export (ex:2020-2021) ";
+        cin>>find_year;
+        
+        while(pCur_Year != NULL && find_year != pCur_Year->name)
+            pCur_Year = pCur_Year->pNext_Year;
+
+    }while(pCur_Year == NULL);
+
+    if(pCur_Year->pClass == NULL) {
+        return;
+    }
+    Class *pCur_Class = pCur_Year->pClass;
+    while (pCur_Class != NULL)
+    {
+        cout << pCur_Class->name << " ";
+        pCur_Class = pCur_Class->pNext_Class;
+    }
+    cout<<endl;
+}
+void Print_Student(Year *year)
+{
+    Year* pCur_Year;
+    do{
+        pCur_Year = year;
+        string find_year;
+        cout<<"academic year export (ex:2020-2021) ";
+        cin>>find_year;
+        
+        while(pCur_Year != NULL && find_year != pCur_Year->name)
+            pCur_Year = pCur_Year->pNext_Year;
+
+    }while(pCur_Year == NULL);
+
+    Class* pCur_Class;
+    do{
+        pCur_Class = pCur_Year->pClass;
+        string find_class;
+        cout<<"class export (ex:21CLC10) ";
+        cin>>find_class;
+        
+        while(pCur_Class != NULL && find_class != pCur_Class->name)
+            pCur_Class = pCur_Class->pNext_Class;
+
+    }while(pCur_Class == NULL);
+
+    if(pCur_Class->pStudent == NULL) {
+        return;
+    }
+    Student *pCur_Student = pCur_Class->pStudent;
+    while (pCur_Student != NULL)
+    {
+        //No, StudentID, Year_Student, FirstName, LastName, Gender, Date_of_Birth, SocialID
+        cout <<"No."<< pCur_Student->No << " | ";
+        cout<< pCur_Student->StudentID << " | ";
+        cout<< pCur_Student->FirstName << " | ";
+        cout<< pCur_Student->LastName << " | ";
+        cout<< pCur_Student->Gender << " | ";
+        cout<< pCur_Student->Date_of_Birth << " | ";
+        cout<< pCur_Student->SocialID << " \n";
+        pCur_Student = pCur_Student->pNext_Student;
+    }
+    cout<<endl;
+}
+
