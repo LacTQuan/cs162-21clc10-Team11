@@ -39,10 +39,15 @@ struct Subject{
     Subject* pNext_Subject;
     Course* pCourse;
 };
+//struct Semester{
+//    string name;
+//    Semester* pNext_Semester;
+//    Subject* pSubject;
+//};
 struct Semester{
     string name;
     Semester* pNext_Semester;
-    Subject* pSubject;
+    Course* pCourse;
 };
 //main
 struct Year{
