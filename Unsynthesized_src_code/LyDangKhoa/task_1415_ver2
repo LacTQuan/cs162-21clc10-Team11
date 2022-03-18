@@ -11,6 +11,19 @@ Student_Course* Copy_Student_Cour(Student* student){
     return Student_Cour;
 }
 /*
+struct Cur_Course{ //new
+    string CourseID, Course_Name, Teacher_Name, Number_of_Credits, Max_Student, Day1, Session1, Day2, Session2;
+    string Start_Day, End_Day;
+    Mark mark;      
+    Cur_Course* pNext_Cur_Cour;
+    //Temp_Course* pTemp_Cour;
+};
+struct Student{
+    //No, StudentID, FirstName, LastName, Gender, Date_of_Birth, SocialID
+    string No, StudentID, FirstName, LastName, Gender, Date_of_Birth, SocialID;
+    Student* pNext_Student;
+    Cur_Course* pCur_Cour;
+};
 void View_Enrolled_Course(Student* student){
     if (student->pCur_Cour != NULL){
         Student* pEnroll = student.pCur_Cour;
