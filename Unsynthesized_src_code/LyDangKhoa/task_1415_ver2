@@ -1,0 +1,73 @@
+/*
+Student_Course* Copy_Student_Cour(Student* student){
+    Student_Course* Student_Cour = new Student_Course;
+    Student_Cour->No = student->No;
+    Student_Cour->StudentID = student->StudentID;
+    Student_Cour->FirstName = student->FirstName;
+    Student_Cour->LastName = student->LastName;
+    Student_Cour->Gender = student->Gender;
+    Student_Cour->Date_of_Birth = student->Date_of_Birth;
+    Student_Cour->SocialID = student->SocialID;
+    return Student_Cour;
+}
+/*
+struct Cur_Course{ //new
+    string CourseID, Course_Name, Teacher_Name, Number_of_Credits, Max_Student, Day1, Session1, Day2, Session2;
+    string Start_Day, End_Day;
+    Mark mark;      
+    Cur_Course* pNext_Cur_Cour;
+    //Temp_Course* pTemp_Cour;
+};
+struct Student{
+    //No, StudentID, FirstName, LastName, Gender, Date_of_Birth, SocialID
+    string No, StudentID, FirstName, LastName, Gender, Date_of_Birth, SocialID;
+    Student* pNext_Student;
+    Cur_Course* pCur_Cour;
+};
+void View_Enrolled_Course(Student* student){
+    if (student->pCur_Cour != NULL){
+        Student* pEnroll = student.pCur_Cour;
+        while(pEnroll != NULL){
+            cout << student.pCur_Cour << "\n";
+            pCur_Cour = pCur_Cour->pNext_Cur_Cour;
+        }
+    }
+}
+void Delete_Enrolled_Course(Student* student, string enroll_course){
+    cout << "Enter the courseID you want to delete; ";
+    getline(cin, enroll_course);
+    Student* pDel = student.pCur_Cour;
+    // Neu pDel = NULL thi danh sach rong
+    if(pDel == NULL){
+        cout << "You haven't enrolled any courses!" << endl;
+    }
+    else{
+        Student* pPrev = NULL;
+        // Dung vong lap de tim ra pDel va pPrev
+        while(pDel != NULL){
+            if(pDel->CourseID == enroll_course){
+                break;
+            }
+            pPrev = pDel;
+            pDel = pDel->pNext_Cur_Cour;
+        }
+        if (pDel == NULL){
+            cout << "Cannot find the course you want to delete!";
+        }
+        else{
+            // xoa dau danh sach
+            if(pDel == student.pCur_Cour){
+                student.pCur_Cour = student.pCur_Cour->pNext_Cur_Cour;
+                pDel->pNext_Cur_Cour = NULL;
+                delete pDel;
+                pDel = NULL;
+            }
+            else{
+                pPre->pNext_Cur_Cour = pDel->pNext_Cur_Cour;
+                pDel->pNext_Cur_Cour = NULL;
+                delete pDel;
+                pDel = NULL;
+            }
+        }
+    }
+}

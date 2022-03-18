@@ -39,10 +39,15 @@ struct Subject{
     Subject* pNext_Subject;
     Course* pCourse;
 };
+//struct Semester{
+//    string name;
+//    Semester* pNext_Semester;
+//    Subject* pSubject;
+//};
 struct Semester{
     string name;
     Semester* pNext_Semester;
-    Subject* pSubject;
+    Course* pCourse;
 };
 //main
 struct Year{
@@ -80,7 +85,8 @@ void Print_Student(Year *year);
 void Create_Year(Year* &year);
 void Create_Class(Year* &year);
 void Create_Student(Year* &year);
-
+void View_Student_In_Class(Year *year); // 18
+void View_Student_In_Course(Year *year); // 20
 
 void solve();
 
