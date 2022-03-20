@@ -11,6 +11,19 @@ Student_Course* Copy_Student_Cour(Student* student){
     return Student_Cour;
 }
 /*
+struct Student_Course{
+    string No, StudentID, FirstName, LastName, Gender, Date_of_Birth, SocialID;
+    Student_Course* pNext_Student_Course;
+    Student* pStudent;
+};
+struct Course{
+    //Course id, Course name, teacher name, number of credits, 
+    //the maximum number of students (default 50), day, and the session
+    string CourseID, Course_Name, Teacher_Name, Number_of_Credits, Max_Student, Day1, Session1, Day2, Session2;
+    string Start_Day, End_Day;
+    Course* pNext_Course;
+    Student_Course* pStudent_Course;
+};
 struct Cur_Course{ //new
     string CourseID, Course_Name, Teacher_Name, Number_of_Credits, Max_Student, Day1, Session1, Day2, Session2;
     string Start_Day, End_Day;
@@ -25,13 +38,44 @@ struct Student{
     Cur_Course* pCur_Cour;
 };
 void View_Enrolled_Course(Student* student){
-    if (student->pCur_Cour != NULL){
-        Student* pEnroll = student.pCur_Cour;
+    Cur_Course* pCur_Cour = new Cur_Course;
+    if(student->pCur_Cour == NULL){
+        cout << "You haven't enrolled any courses yet!" << endl;
+    }
+    else{
+        Cur_Course* pEnroll = student->pCur_Cour;
+        cout << "Courses have been enrolled: ";
         while(pEnroll != NULL){
-            cout << student.pCur_Cour << "\n";
-            pCur_Cour = pCur_Cour->pNext_Cur_Cour;
+            cout << pEnroll->Course_Name << " | ";
+            pEnroll = pEnroll->pNext_Cur_Cour;
         }
     }
+}
+Student* find_student_in_many_classes(Year* year, string Student_ID){
+    if(year->pClass == NULL) return NULL;
+    Class* pCur_Class = year->pClass;
+
+    while(pCur_Class != NULL){
+        Student* temp = find_student_in_1_class(pCur_Class,Student_ID);
+        if(temp != NULL) return temp;
+        pCur_Class = pCur_Class->pNext_Class;
+    }
+    return NULL;
+}
+void View_Enrolled_Course_main(Year*& year, Semester*& semester){
+    string studentID;
+    cout << "Your student ID: ";
+    cin >> studentID;
+    Student* student = find_student_in_many_classes(year, studentID);
+    if(student == NULL){
+        cout << "Student ID not found!" << endl;
+        cin.ignore();
+        getchar();
+        return;
+    }
+    View_Enrolled_Course(student);
+    cin.ignore();
+    getchar();
 }
 void Delete_Enrolled_Course(Student* student, string enroll_course){
     cout << "Enter the courseID you want to delete; ";
