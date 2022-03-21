@@ -115,3 +115,31 @@ void Delete_Enrolled_Course(Student* student, string enroll_course){
         }
     }
 }
+void Delete_Enrolled_Course_main(Year* &year, Semester* &semester){
+    string studentID;
+    cout<<"Your studentID: "; 
+    cin>>studentID;
+    Student* student = find_student_in_many_classes(year, studentID);
+    if(student == NULL){
+        cout<<"Student ID not found!" << endl;
+        cin.ignore();
+        getchar();
+        return;
+    }
+    //View_Enrolled_Course(student);
+    else{
+        string course_name;
+        cout << "Course you want to delete: "; 
+        cin>>course_name;
+        Course* Del_Cour = find_course_in_many_subjects(semester,course_name);
+        if(Del_Cour == NULL){
+            cout<<"Course name not found!" << endl;
+            cin.ignore();
+            getchar();
+            return;
+        }
+        cout<<"You have deleted course: " << Del_Cour->Course_Name << endl;
+
+        Delete_Enrolled_Course(student,Del_Cour);
+    }
+}
