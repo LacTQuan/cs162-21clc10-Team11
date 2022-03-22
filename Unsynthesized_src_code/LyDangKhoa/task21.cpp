@@ -825,6 +825,7 @@ void Delete_Enrolled_Course_main(Year*& year, Semester*& semester) {
 
     Delete_Enrolled_Course(student, Del_Cour);
 }
+// task 21
 void Export_Course(Course* course) {
     Student_Course* stu_cour = course->pStudent_Course;
     ofstream fileout;
