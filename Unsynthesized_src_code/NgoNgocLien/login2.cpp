@@ -1104,17 +1104,13 @@ Account *load_account_list(){
     getline(inputFile, head->password, '\n');
 
     Account *cur = head;
-    bool eof = false;
     do{
         cur->next = new Account;
         cur = cur->next;
         getline(inputFile, cur->username, ',');
-        if (cur->username != "\n")
-            getline(inputFile, cur->password, '\n');
-        else    
-            eof = true;
+        getline(inputFile, cur->password, '\n');
         cur->next = nullptr;
-    }while (eof == false);
+    }while (inputFile.eof() == false);
 
     inputFile.close();
     return head;
