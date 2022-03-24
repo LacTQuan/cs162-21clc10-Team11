@@ -724,7 +724,17 @@ void Delete_Enrolled_Course(Student*& student, Course*& course) {
         delete pDel2;
     }
 }
-
+void Export_Course(Course* course) {
+    Student_Course* stu_cour = course->pStudent_Course;
+    ofstream fileout;
+    fileout.open("student course.csv");
+    while (fileout.eof() == false) {
+        if (stu_cour != NULL)
+            fileout << stu_cour->No << "," << stu_cour->StudentID << "," << stu_cour->FirstName << "," << stu_cour->LastName << stu_cour->Date_of_Birth << endl;
+            stu_cour = stu_cour->pNext_Student_Course;
+    }
+    fileout.close();
+}
 // find student
 Student* find_student_in_1_class(Class* classes, string Student_ID) {
     if (classes->pStudent == NULL) return NULL;
@@ -824,18 +834,6 @@ void Delete_Enrolled_Course_main(Year*& year, Semester*& semester) {
     cout << "This course is" << Del_Cour->Course_Name << endl;
 
     Delete_Enrolled_Course(student, Del_Cour);
-}
-// task 21
-void Export_Course(Course* course) {
-    Student_Course* stu_cour = course->pStudent_Course;
-    ofstream fileout;
-    fileout.open("student course.csv");
-    while (fileout.eof() == false) {
-        if (stu_cour != NULL)
-            fileout << stu_cour->No << "," << stu_cour->StudentID << "," << stu_cour->FirstName << "," << stu_cour->LastName << stu_cour->Date_of_Birth << endl;
-            stu_cour = stu_cour->pNext_Student_Course;
-    }
-    fileout.close();
 }
 void Export_Course_main(Year*& year, Semester*& semester) {
     string course_name;
