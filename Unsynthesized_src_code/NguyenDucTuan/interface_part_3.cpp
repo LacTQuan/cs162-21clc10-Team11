@@ -1,22 +1,22 @@
-// #include<iostream>
-// #include<cstring>
-// #include <iomanip>
-// #include <fstream>
-// #include <cstdlib>
-// #include <algorithm>
-#include<bits/stdc++.h>
+#include<iostream>
+#include<cstring>
+#include <iomanip>
+#include <fstream>
+#include <cstdlib>
+#include <algorithm>
+#include<cmath>
+#include<string>
+#include <conio.h>
+#include <Windows.h>
+//#include<bits/stdc++.h>
 using namespace std;
 
 #define nullptr 0
+int HOME = 0;
 //right
 struct Mark{ // new
     double Total = 0, Final = 0, Midterm = 0, Other = 0;
 };
-// struct Temp_Course{ //new
-//     string CourseID, Course_Name, Teacher_Name, Number_of_Credits, Max_Student, Day1, Session1, Day2, Session2;
-//     string Start_Day, End_Day;
-//     Mark mark;
-// };
 struct Cur_Course{ //new
     string CourseID, Course_Name, Teacher_Name, Number_of_Credits, Max_Student, Day1, Session1, Day2, Session2;
     string Start_Day, End_Day;
@@ -80,6 +80,28 @@ Semester* find_semester(Semester* pSem, string name) {
         pSem = pSem->pNext_Semester;
     return pSem;
 }
+void Nocursortype(){
+	CONSOLE_CURSOR_INFO Info;
+	Info.bVisible = FALSE;
+	Info.dwSize = 20;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &Info);
+}
+void gotoxy(SHORT posX, SHORT posY)
+{
+	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD Position;
+	Position.X = posX - 1;
+	Position.Y = posY - 1;
+
+	SetConsoleCursorPosition(hStdout, Position);
+}
+void Textcolor(int x){
+	HANDLE mau;
+	mau = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(mau, x);
+
+}
+
 void Create_Course(Semester* sem) { 
     ifstream filein("course.csv");
     while(filein.eof() == false){
@@ -121,67 +143,6 @@ void Create_Course(Semester* sem) {
     
 }
 
-/*
-void add_Course(Year* &year) { 
-    string s;
-    cout << "Semester: ";
-    cin >> s;
-    Semester* sem = find_semester(year->pSemester, s);
-    while (!sem) {
-        cout << "Semester not found! Try again: ";
-        cin >> s;
-        sem = find_semester(year->pSemester, s);
-    }
-    cout << "Subject: ";
-    cin.ignore(1000, '\n');
-    getline(cin, s, '\n');
-    Subject* Sub = find_Subject(sem->pSubject, s);
-    while (!Sub) {
-        cout << "Subject not found! Try again: ";
-        cin.ignore(1000, '\n');
-        getline(cin, s, '\n');
-        Sub = find_Subject(sem->pSubject, s);
-    }
-    Course* add_Course = nullptr;
-    if (!Sub->pCourse) {
-        Sub->pCourse = new Course;
-        add_Course = Sub->pCourse;
-    }
-    else {
-        while (Sub->pCourse->pNext_Course) 
-            Sub->pCourse = Sub->pCourse->pNext_Course;
-        Sub->pCourse->pNext_Course = new Course;
-        add_Course = Sub->pCourse->pNext_Course;
-    }
-    ifstream filein("course.csv");
-    while(filein.eof() == false){
-        cout << "ID: ";
-        getline(filein,add_Course->CourseID,','); cout<<add_Course->CourseID<<" | ";
-        cout << "Number of credits: ";
-        getline(filein,add_Course->Number_of_Credits,','); cout<<add_Course->Number_of_Credits<<" | ";
-        cout << "Maximum number of students in Course: ";
-        getline(filein,add_Course->Max_Student,','); cout<<add_Course->Max_Student<<" | ";
-        cout << "Course name: ";
-        getline(filein,add_Course->Course_Name,','); cout<<add_Course->Course_Name<<" | ";
-        cout << "Teacher name: ";
-        getline(filein,add_Course->Teacher_Name,',');cout<<add_Course->Teacher_Name<<" | ";
-        cout << "Day 1: ";
-        getline(filein,add_Course->Day1,','); cout<<add_Course->Day1<<" | ";
-        cout << "Session 1: ";
-        getline(filein,add_Course->Session1,','); cout<<add_Course->Session1<<" | ";
-        cout << "Day 2: ";
-        getline(filein,add_Course->Day2,','); cout<<add_Course->Day2<<" | ";
-        cout << "Session 2: ";
-        getline(filein,add_Course->Session2,','); cout<<add_Course->Session2<<" | ";
-        cout << "Start day: ";
-        getline(filein,add_Course->Start_Day,','); cout<<add_Course->Start_Day<<" | ";
-        cout << "End day: ";
-        getline(filein,add_Course->End_Day,'\n'); cout<<add_Course->End_Day<<endl<<" | ";
-    }
-    filein.close();
-    add_Course->pNext_Course = nullptr;
-}
-*/
 void Print_Course(Semester* sem) {
     Course* pCourse = sem->pCourse;
     cout << endl;
@@ -242,18 +203,7 @@ Student* find_student_in_many_classes(Year* year, string Student_ID){
     return NULL;
 }
 //find course
-/*
-Course* find_course_in_1_subject(Subject* subject, string course){
-    if(subject->pCourse == NULL) return NULL;
-    Course* pCur_Course = subject->pCourse;
-    
-    while(pCur_Course != NULL && pCur_Course->Course_Name != course)
-        pCur_Course = pCur_Course->pNext_Course;
 
-    if(pCur_Course != NULL) return pCur_Course;
-    return NULL;
-}
-*/
 // find student in course
 Student_Course* find_student_in_a_course(Course* cour, string Student_ID) {
     Student_Course* pCur = cour->pStudent_Course;
@@ -270,6 +220,7 @@ Course* find_course_in_many_subjects(Semester* semester, string course){
     }
     return NULL;
 }
+
 void Delete_Course(Semester* sem) {
     string s;
     cout << "Course name: " ;
@@ -737,128 +688,7 @@ Semester* Import_Semester(Semester* sem){
     return pCur_sem;
 }
 
-/*
-bool Check_Cur_Course(Course* course_regis,Student* student){
-    Cur_Course* pCur = student->pCur_Cour;
-    while(pCur != NULL){
-        if(pCur->pTemp_Cour->Course_Name == course_regis->Course_Name) return false;
-        else pCur = pCur->pNext_Cur_Cour;
-    }
-    return true;
-}
-
-//CourseID, Course_Name, Teacher_Name, Number_of_Credits, Max_Student, Day1, Session1, Day2, Session2;
-// Start_Day, End_Day;
-
-
-//enroll
-Temp_Course* Copy_Course(Course* course_regis){
-    Temp_Course* Temp_Cour;
-    Temp_Cour->CourseID = course_regis->CourseID;
-    Temp_Cour->Course_Name = course_regis->Course_Name;
-    Temp_Cour->Teacher_Name = course_regis->Teacher_Name;
-    Temp_Cour->Number_of_Credits = course_regis->Number_of_Credits;
-    Temp_Cour->Max_Student = course_regis->Max_Student;
-    Temp_Cour->Day1 = course_regis->Day1;
-    Temp_Cour->Session1 = course_regis->Session1;
-    Temp_Cour->Day2 = course_regis->Day2;
-    Temp_Cour->Session2 = course_regis->Session2;
-    Temp_Cour->Start_Day = course_regis->Start_Day;
-    Temp_Cour->End_Day = course_regis->End_Day;
-    return Temp_Cour;
-}
-void Enroll_Course(Course* course_regis, Student* student){
-    if(Check_Cur_Course(course_regis,student) == true){
-        //add course into cur_course
-        Temp_Course* Temp_Cour = Copy_Course(course_regis);
-
-        Cur_Course* cur_course = new Cur_Course;
-        cur_course->pNext_Cur_Cour = NULL;
-        cur_course->pTemp_Cour = NULL;
-        Cur_Course* pCur = student->pCur_Cour;
-
-        if(student->pCur_Cour == NULL){
-            student->pCur_Cour = cur_course;
-            student->pCur_Cour->pTemp_Cour = Temp_Cour;
-        }
-        else{
-            while(pCur->pNext_Cur_Cour != NULL) pCur = pCur->pNext_Cur_Cour;
-            pCur->pNext_Cur_Cour = cur_course;
-            pCur->pNext_Cur_Cour->pTemp_Cour = Temp_Cour;
-        }
-        //add inf SV into student_course
-        Student_Course* Student_cour = new Student_Course;
-        Student_Course* pCur_Student_cour = course_regis->pStudent_Course;
-        if(course_regis->pStudent_Course == NULL) course_regis->pStudent_Course = Student_cour;
-        else {
-            while(pCur_Student_cour->pNext_Student_Course != NULL)
-                pCur_Student_cour = pCur_Student_cour->pNext_Student_Course;
-            pCur_Student_cour->pNext_Student_Course->pStudent = student;
-        }
-
-    } else cout<<"This subject has been registering\n";
-    
-    //else
-    //da hoc , da dki cout<<thong bao
-    // khi doi hoc ki dua vao chuc nang thay doi time he thong thi luc do cur->stu
-    //** khi enroll thi dua inf sv vao course_student
-}
-
-// find student
-Student* find_student_in_1_class(Class* classes, string StudentID){
-    if(classes->pStudent == NULL) return NULL;
-    Student* pCur_Student = classes->pStudent;
-    
-    while(pCur_Student != NULL && pCur_Student->StudentID == StudentID)
-        pCur_Student = pCur_Student->pNext_Student;
-
-    if(pCur_Student != NULL) return pCur_Student;
-    return NULL;
-}
-Student* find_student_in_many_classes(Year* year, string StudentID){
-    if(year->pClass == NULL) return NULL;
-    Class* pCur_Class = year->pClass;
-
-    while(pCur_Class != NULL){
-        Student* temp = find_student_in_1_class(pCur_Class,StudentID);
-        if(temp != NULL) return temp;
-        pCur_Class = pCur_Class->pNext_Class;
-    }
-    return NULL;
-}
-//find course
-Course* find_course_in_1_subject(Subject* subject, string course){
-    if(subject->pCourse == NULL) return NULL;
-    Course* pCur_Course = subject->pCourse;
-    
-    while(pCur_Course != NULL && pCur_Course->Course_Name == course)
-        pCur_Course = pCur_Course->pNext_Course;
-
-    if(pCur_Course != NULL) return pCur_Course;
-    return NULL;
-}
-Course* find_course_in_many_subjects(Semester* semester, string course){
-    if(semester->pSubject == NULL) return NULL;
-    Subject* pCur_Subject = semester->pSubject;
-
-    while(pCur_Subject != NULL){
-        Course* temp = find_course_in_1_subject(pCur_Subject,course);
-        if(temp != NULL) return temp;
-        pCur_Subject = pCur_Subject->pNext_Subject;
-    }
-    return NULL;
-}
-//enroll main
-void enroll_main(Year* &year, Semester* &semester, string StudentID){
-    Student* student = find_student_in_many_classes(year, StudentID);
-    
-    //view all course
-    string course_name;
-    cout<<"Course you want to choose "; cin>>course_name;
-    Course* course_regis = find_course_in_many_subjects(semester,course_name);
-    Enroll_Course(course_regis,student);
-}
-*/
+//check enroll
 bool Check_Cur_Course(Course* course_regis,Student* student){
     Cur_Course* pCur = student->pCur_Cour;
     while(pCur != NULL){
@@ -876,6 +706,15 @@ bool Check_quantity(Student* student){
     }
     if(count <= 3) return true;
     return false;
+}
+bool Check_Session(Course* course_regis,Student* student){
+    Cur_Course* pCur = student->pCur_Cour;
+    while(pCur != NULL){
+        if((pCur->Day1 == course_regis->Day1 && pCur->Session1 == course_regis->Session1) || 
+        (pCur->Day2 == course_regis->Day2 && pCur->Session2 == course_regis->Session2)) return false;
+        else pCur = pCur->pNext_Cur_Cour;
+    }
+    return true;
 }
 //enroll
 Cur_Course* Copy_Course(Course* course_regis){
@@ -906,10 +745,9 @@ Student_Course* Copy_Student_Cour(Student* student){
     return Student_Cour;
 }
 void Enroll_Course(Course* &course_regis, Student* &student){
-    if(Check_Cur_Course(course_regis,student) == true && Check_quantity(student) == true){
-        //add course into cur_course
-        //Temp_Course* Temp_Cour = Copy_Course(course_regis);
-
+    if(Check_Cur_Course(course_regis,student) == true && Check_quantity(student) == true &&
+       Check_Session(course_regis,student) == true ){
+        //add course_regis into student_course
         Cur_Course* cur_course = Copy_Course(course_regis);
         cur_course->pNext_Cur_Cour = NULL;
         Cur_Course* pCur = student->pCur_Cour;
@@ -921,6 +759,7 @@ void Enroll_Course(Course* &course_regis, Student* &student){
             while(pCur->pNext_Cur_Cour != NULL) pCur = pCur->pNext_Cur_Cour;
             pCur->pNext_Cur_Cour = cur_course;
         }
+
         //add inf SV into student_course
         Student_Course* Student_cour = Copy_Student_Cour(student);
         Student_cour->pNext_Student_Course = NULL;
@@ -934,21 +773,18 @@ void Enroll_Course(Course* &course_regis, Student* &student){
                 pCur_Student_cour = pCur_Student_cour->pNext_Student_Course;
             pCur_Student_cour->pNext_Student_Course = Student_cour;
         }
-        Cur_Course* pCur_st = student->pCur_Cour;
-        while(pCur_st != NULL){
-            cout<<pCur_st->Course_Name<<" ";
-            pCur_st = pCur_st->pNext_Cur_Cour;
-        }
-        cin.ignore();
-        getchar();
+    
     }else {
         if(Check_Cur_Course(course_regis,student) == false){
-            cout<<"This subject has been registering\n";
+            cout<<"This course has been registering\n";
             cin.ignore();
             getchar();
-        }
-        if(Check_quantity(student) == false){
-            cout<<"This subject has enough quantity\n";
+        }else if (Check_quantity(student) == false){
+            cout<<"This course has enough quantity\n";
+            cin.ignore();
+            getchar();
+        }else if(Check_Session(course_regis,student) == false){
+            cout<<"The schedule has been overlapped\n";
             cin.ignore();
             getchar();
         }
@@ -956,26 +792,31 @@ void Enroll_Course(Course* &course_regis, Student* &student){
 }
 
 //enroll main
-void enroll_main(Year* &year, Semester* &semester, string Student_ID){
-    Student* student = find_student_in_many_classes(year, Student_ID);
+void enroll_main(Year* &year, Semester* &semester){
+    string studentID;
+    cout<<"StudentID "; cin>>studentID;
+
+    Student* student = find_student_in_many_classes(year, studentID);
     if(student == NULL){
-        cout<<"valid student"<<endl;
+        cout<<"invalid student"<<endl;
+    cin.ignore();
+    getchar();
         return;
     }
-    cout<<"MSSV of this student "<<student->StudentID<<endl;
     //view all course
     string course_name;
     cout<<"Course you want to choose "; cin>>course_name;
     Course* course_regis = find_course_in_many_subjects(semester,course_name);
     if(course_regis == NULL){
-        cout<<"valid course_register"<<endl;
+        cout<<"invalid course_register"<<endl;
+        cin.ignore();
+        getchar();
         return;
     }
-    cout<<"This course is" <<course_regis->Course_Name<<endl;
 
-    system("pause");
     Enroll_Course(course_regis,student);
 }
+
 
 double rand_mark() {
     //srand(time(NULL));
@@ -989,62 +830,48 @@ void Assign_Mark(Year* year, string Student_ID, double total, double final, doub
     Std->pCur_Cour->mark.Other = other,
     Std->pCur_Cour->mark.Total = total;
 }
-void Create_Mark(Semester* sem) {
-    string s;
-    cout << "Course name: ";
-    cin >> s;
-    Course* cour = find_Course(sem->pCourse, s);
-    while (cour == nullptr || (cour->Course_Name != s && cour->pNext_Course == nullptr)) {
-        cout << "Course not found. Try again: ";
-        cin >> s;
-        cour = find_Course(sem->pCourse, s);
-    }
-    if (cour->pStudent_Course == nullptr) {
-        cout << "No student in this course!" << endl;
-        return;
-    }
-    ofstream fout("mark.csv");
-    fout << "No,ID,Full name,Total mark,Final mark,Midterm mark,Other mark\n";
+void Create_Mark(Course* cour) {
+    string s = cour->Course_Name + ".csv";
+    ofstream fout(s);
+    fout << "No,ID,Full name,Total mark,Final mark,Midterm mark,Other mark";
     Student_Course* Stu_Cour = cour->pStudent_Course;
     int cnt = 1;
     while (Stu_Cour) {
+        fout << endl;
         double total, final, mid, other;
         final = rand_mark(), mid = rand_mark(), other = (rand() % 10) / 10.0;
         total = (final * 2.0 + mid) / 3.0 + other;
         final = int(final * 10) / 10.0;
         fout << cnt++ << "," << Stu_Cour->StudentID << "," << Stu_Cour->FirstName + " " + Stu_Cour->LastName << ","
-        << total << "," << final << "," << mid << "," << other << endl;
+        << total << "," << final << "," << mid << "," << other;
         Stu_Cour = Stu_Cour->pNext_Student_Course;
     }
     fout.close();
 }
+int convert_to_int(string s) {
+    int res = 0;
+    for (int i = 0; i < s.length(); i++)
+        res = res * 10 + (s[i] - '0');
+    return res;
+}
 double convert_to_double(string s) {
-    string s1 = "", s2 = "";
+    string s1 = "", s2 = ""; // s1 la phan nguye, s2 la phan thap phan
     double res;
-    bool t = 0;
-    for (auto c : s) {
-        if (c == '.') t = 1;
+    bool t = 0; // neu t = 0 thi la phan nguyen, = 1 thi la phan thap phan
+    for (int i = 0; i < s.length(); i++) {
+        if (s[i] == '.') t = 1;
         else {
-            if (t == 0) s1 += c; 
-            else s2 += c;
+            if (t == 0) s1 += s[i]; 
+            else s2 += s[i];
         }
     }
-    if (s2.length() != 0) 
-        res = stoi(s1) + stoi(s2) / pow(10, s2.length()) * 1.0;
-    else res = stoi(s1) * 1.0;
-    res = int(res * 10) / 10.0;
+    res = convert_to_int(s1) + convert_to_int(s2) / pow(10, s2.length()) * 1.0; // cong phan nguyen va phan thap phan
+    res = int(res * 10) / 10.0; // lam tron 1 chu so thap phan
     return res;
 }
 void Import_Scoreboard(Year* year, Course* cour) {
-    string s;
-    cout << "Enter file's name: ";
-    cin >> s;
+    string s = cour->Course_Name + ".csv";
     ifstream fin(s);
-    while (!fin) {
-        cout << "File does not exist. Try another name: ";
-        cin >> s;
-        fin.open(s);
-    }
     fin.ignore(1000, '\n');
     while (fin.eof() == false) {
         getline(fin, s, ',');
@@ -1074,81 +901,93 @@ void View_Score_Board(Course *cour) {
         pCurStd = pCurStd->pNext_Student_Course;
     }
 }
-/////////////////////////////
-struct Account{
-    string username, password;
-    Account *next;
-};
-struct User{
-    string username, password;
-};
-bool account_check(Account *head, string username, string password){
-    bool success = false;
-    Account *cur = head;
-    while (!success && cur){
-        if (cur->username == username && cur->password == password)
-            success = true;
-        else
-            cur = cur->next;
+// mark main & scoreboard in a course main
+void Create_mark_main(Year* year,Semester* sem){
+    string course_name;
+    cout<<"Course you want to choose "; cin>>course_name;
+    Course* course_regis = find_course_in_many_subjects(sem,course_name);
+    if(course_regis == NULL){
+        cout<<"invalid course_register"<<endl;
+        cin.ignore();
+        getchar();
+        return;                                      
     }
-    return success;
+    Create_Mark(course_regis);
+    Import_Scoreboard(year, course_regis);
 }
-/*******************************************************
- * Load all usernames and passwords to a pointer array *
- * for futher rewriting file                           *
- *******************************************************/
-Account *load_account_list(){
-    fstream inputFile("account.csv", ios::in);
-    Account *head = new Account;
-    getline(inputFile, head->username, ',');
-    getline(inputFile, head->password, '\n');
+void View_scoreboard_main(Semester* sem){
+    string course_name;
+    cout<<"Course you want to choose "; cin>>course_name;
+    Course* course_regis = find_course_in_many_subjects(sem,course_name);
+    if(course_regis == NULL){
+        cout<<"invalid course_register"<<endl;
+        cin.ignore();
+        getchar();
+        return;                                      
+    }
+    system("cls");
+    View_Score_Board(course_regis);
+}
+void update_student_result(Year* year, Semester* sem){
+    //view all course
+    //Print_Course(sem);
+    //find course
+    string course_name;
+    cout<<"Course you want to choose "; cin>>course_name;
+    Course* course_update = find_course_in_many_subjects(sem,course_name);
+    if(course_update == NULL){
+        cout<<"invalid course_update"<<endl;
+        cin.ignore();
+        getchar();
+        return;
+    }
+    system("cls");
+    //view student in a course
+    View_Score_Board(course_update);
+    // find student
 
-    Account *cur = head;
-    do{
-        cur->next = new Account;
-        cur = cur->next;
-        getline(inputFile, cur->username, ',');
-        getline(inputFile, cur->password, '\n');
-        cur->next = nullptr;
-    }while (inputFile.eof() == false);
+    string studentID;
+    cout<<"StudentID "; cin>>studentID;
 
-    inputFile.close();
-    return head;
-}
-void save_account_list(Account *head){
-    fstream changeFile("account.csv", ios::out); // rewrite file
-    Account *cur = head;
-    while (cur){
-        changeFile << cur->username << ',' << cur->password << '\n';
-        cur = cur->next;
+    Student* student = find_student_in_many_classes(year, studentID);
+    if(student == NULL){
+        cout<<"invalid student"<<endl;
+        cin.ignore();
+        getchar();
+        return;
     }
-    changeFile.close();
-}
-void delete_account_list(Account *&head){
-    Account *temp = nullptr;
-    while (head){
-        temp = head->next;
-        delete head;
-        head = temp;
+    Student_Course* student_cour = find_student_in_a_course(course_update,student->StudentID);
+    
+    cout<<"Update score\n";
+    cout<<"Midterm ";cin>>student_cour->mark.Midterm;
+    cout<<"Final ";cin>>student_cour->mark.Final;
+    cout<<"Other ";cin>>student_cour->mark.Other;
+    double a,b,c;
+    a = student_cour->mark.Midterm;
+    b = student_cour->mark.Final;
+    c = student_cour->mark.Other;
+    student_cour->mark.Total = int(((a + b* 2)/3 + c)* 10 )/10.0;// lam tron 1 chu so thap phan
+
+
+    Cur_Course* cur_cour = student->pCur_Cour;
+    while(cur_cour != NULL){
+        if(cur_cour->Course_Name != course_update->Course_Name) cur_cour = cur_cour->pNext_Cur_Cour;
+        else break;
     }
+    // copy student_course score into cur_course student
+    cur_cour->mark.Midterm = student_cour->mark.Midterm;
+    cur_cour->mark.Final = student_cour->mark.Final;
+    cur_cour->mark.Other = student_cour->mark.Other;
+    cur_cour->mark.Total = student_cour->mark.Total;
+
 }
-void change_password(Account *head, string username, string newPassword){
-    Account *cur = head;
-    bool found = false;
-    while (cur && cur->username != username)
-        cur = cur->next;
-    if (cur == nullptr){
-        cout << "ERROR!\n";
-    }
-    else
-        cur->password = newPassword;
-    return;
-}
+
+
 void Interface_Student(Year* year, Semester* sem, string Student_ID) {
     int choose_1;
     do {
         HOME:
-        system("cls");
+        // system("cls");
         cout << "1.Home" << endl;
         cout << "2.Log out" << endl;
         cout << "Enter choose "; cin >> choose_1;
@@ -1156,7 +995,7 @@ void Interface_Student(Year* year, Semester* sem, string Student_ID) {
             int choose_2;
             do {
                 // if course registration is active
-                system("cls");
+                // system("cls");
                 cout << "1.Enroll a course" << endl;
                 cout << "2.View my course" << endl;
                 cout << "3.Remove a course from my list" << endl;
@@ -1164,14 +1003,12 @@ void Interface_Student(Year* year, Semester* sem, string Student_ID) {
                 cout << "5.Home" << endl;
                 cout << "Enter choose " << endl; cin >> choose_2;
                 if (choose_2 == 1) {
-                    system("cls");
+                    // system("cls");
                     Print_Course(sem);
-                    string studentID;
-                    cout<<"StudentID "; cin>>studentID;
-                    enroll_main(year,sem,studentID);
+                    enroll_main(year,sem);
                 }
                 else if (choose_2 == 2) {
-                    system("cls");
+                    // system("cls");
                     Print_Cur_Course(find_student_in_many_classes(year, Student_ID)->pCur_Cour);
                     cout << endl;
                     getchar();
@@ -1211,6 +1048,7 @@ void Interface_Staff(Year* &year){
                 if(choose_2 == 1){
                     system("cls");
                     Print_Year(year);
+
                     Create_Year(year); 
                 }   
 
@@ -1333,6 +1171,9 @@ void Interface_Staff(Year* &year){
                                 cout<<"5.Return"<<endl;
                                 cout<<"6.Enroll"<<endl;
                                 cout<<"7.View student in course"<<endl;
+                                cout<<"8.Create mark"<<endl;
+                                cout<<"9.View scoreboard in a course"<<endl;
+                                cout<<"10.Update student result"<<endl;
                                 cout<<"->Enter choose "; cin>>choose_4;
                                 if(choose_4== 1){
                                     system("cls");
@@ -1351,14 +1192,34 @@ void Interface_Staff(Year* &year){
                                 }
                                 else if (choose_4 == 6){
                                     system("cls");
-                                    Print_Course(import_sem);
-                                    string studentID;
-                                    cout<<"StudentID "; cin>>studentID;
-                                    enroll_main(import_year,import_sem,studentID);
+                                    Print_Course(import_sem);                        
+                                    enroll_main(import_year,import_sem);
                                 }
                                 else if (choose_4 == 7) {
                                     system("cls");
                                     View_Student_In_Course(import_sem);
+                                    cin.ignore();
+                                    getchar();
+                                }
+                                else if (choose_4 == 8) {
+                                    system("cls");
+                                    Print_Course(import_sem);
+                                    Create_mark_main(import_year,import_sem);
+                                    // Import_Scoreboard(year, cour);
+                                    // View_Score_Board(cour);
+                                    // cin.ignore(1000, '\n');
+                                    // getchar();
+                                }else if (choose_4 == 9){
+                                    system("cls");
+                                    Print_Course(import_sem);
+                                    View_scoreboard_main(import_sem);
+                                    cin.ignore();
+                                    getchar();
+                                }else if(choose_4 == 10){
+                                    system("cls");
+                                    Print_Course(import_sem);
+                                    update_student_result(import_year,import_sem);
+                                    cin.ignore();
                                     getchar();
                                 }
                                 if(choose_4 == 4) goto HOME;
@@ -1372,71 +1233,473 @@ void Interface_Staff(Year* &year){
         }
     }while(choose_1 != 2);
 }
-void Interface(Year* &year) {
-    User U;
-    Account *account_head = load_account_list();
-    int choice;
-    do{
-        LOGIN:
-        system("cls");
-        cout << "1. Log in\n";
-        cout << "2. Change password\n";
-        cout << "3. Exit\n";
-        cout << "-> Enter choice: "; cin >> choice;
-        if (choice == 1){
-            system("cls");
-            cout << "Enter username: ";
-            cin >> U.username;
-            cout << "Enter password: ";
-            cin >> U.password;
-            if (account_check(account_head, U.username, U.password)){
-                cout << "Log in successfully.\n";
-                cin.ignore();
-                getchar();
-                //do{...}
-                if ((U.username).find('@') != string::npos)
-                    Interface_Staff(year);
-                else 
-                    Interface_Staff(year); //////////////////////////////////////////////////////////
-                goto LOGIN;
-            }
-            else{
-                cout << "Username or password is incorrect.\n";
-                cin.ignore();
-                getchar();
-                goto LOGIN;
-            }
-        }
-        if (choice == 2){
-            system("cls");
-            string newPassword;
-            cout << "Enter username: "; cin >> U.username;
-            cout << "Enter old password: "; cin >> U.password;
-            if (account_check(account_head, U.username, U.password)){
-                cout << "Enter new password: "; cin >> U.password;
-                change_password(account_head, U.username, U.password);
-                save_account_list(account_head);
-                cout << "Password has been changed.\n";
-                cin.ignore();
-                getchar();
-                goto LOGIN;
-            }
-            else{
-                cout << "Username or password is incorrect";
-                cin.ignore();
-                getchar();
-                goto LOGIN;
-            }
-        }
-    }while (choice != 3);
-    delete_account_list(account_head);
-    return;
+void Interface() {
+    cout << "1.Log in" << endl;
+    cout << "2.Exit" << endl;
     // student account ---> Interface_Student
     // staff account ---> Interface_Staff
 }
-int main(){
-    Year* year = nullptr;
-    //test(year);
+void box(int x,int y,int width, int height, int textcolor,int bcolor ,string text) {
 
-    Interface(year);
+	Textcolor(10);
+	gotoxy(x + 1, y + 1);
+	cout << text;
+	
+	Textcolor(11);
+	for (int i = x; i <= x + width; i++) {
+		gotoxy(i, y);
+		cout << char(205);
+		gotoxy(i, y + height);
+		cout << char(205);
+	}
+	for (int i = y; i <= y + height; i++) {
+		gotoxy(x, i);
+		cout << char(186);
+		gotoxy(x + width, i);
+		cout << char(186);
+	}
+	gotoxy(x, y); cout << char(201);
+	gotoxy(x + width, y); cout << char(187);
+	gotoxy(x, y + height); cout << char(200);
+	gotoxy(x + width, y + height); cout << char(188);
+}
+
+void STUDENT_COUR_PAGE(int locate_x, int locate_y, int number_of_cells, string STUDENT_COUR_name_list_of_boxs[]) {
+
+	for (int i = 0; i < number_of_cells; i++) {
+		box(locate_x, locate_y + i * 3, 20, 2, 10, 11, STUDENT_COUR_name_list_of_boxs[i]);
+	}
+	int x = locate_x - 1, y = locate_y + 1;
+	gotoxy(x, y);
+	cout << char(26);
+	int xcu = x, ycu = y;
+	bool hold = true;
+	int cell = 1;
+
+	while (true) {
+		if (hold == true) {
+			gotoxy(xcu, ycu);
+			cout << " ";
+			gotoxy(x, y);
+			cout << char(26);
+			hold = false;
+		}
+		if (_kbhit()) {
+			hold = true; // da bam
+			char var = _getch();
+
+			if (var == 72) { //len
+				if (x == locate_x - 1 && y == locate_y + 1) {
+					ycu = y;
+					y += 3 * (number_of_cells - 1);
+					cell = number_of_cells;
+				}
+				else {
+					ycu = y;
+					y -= 3;
+					cell -= 1;
+				}
+			}
+			else if (var == 80) { //xuong
+				if (x == locate_x - 1 && y == (locate_y + 1) + (number_of_cells - 1) * 3) {
+					ycu = y;
+					y -= 3 * (number_of_cells - 1);
+					cell = 1;
+				}
+				else {
+					ycu = y;
+					y += 3;
+					cell += 1;
+				}
+			}
+			else if (var == 13) {
+				if (cell == 1) cout << "A";
+				else if (cell == 2) {
+					cout << "B";
+				}
+				else if (cell == 3) {
+					HOME = 4;
+					return;
+				}
+				else if (cell == 4) break;
+			}
+		}
+
+
+	}
+}
+void SEMESTER_PAGE(int locate_x, int locate_y, int number_of_cells, string SEMESTER_name_list_of_boxs[]) {
+
+	for (int i = 0; i < number_of_cells; i++) {
+		box(locate_x, locate_y + i * 3, 20, 2, 10, 11, SEMESTER_name_list_of_boxs[i]);
+	}
+	int x = locate_x - 1, y = locate_y + 1;
+	gotoxy(x, y);
+	cout << char(26);
+	int xcu = x, ycu = y;
+	bool hold = true;
+	int cell = 1;
+
+	while (true) {
+		if (hold == true) {
+			gotoxy(xcu, ycu);
+			cout << " ";
+			gotoxy(x, y);
+			cout << char(26);
+			hold = false;
+		}
+		if (_kbhit()) {
+			hold = true; // da bam
+			char var = _getch();
+
+			if (var == 72) { //len
+				if (x == locate_x - 1 && y == locate_y + 1) {
+					ycu = y;
+					y += 3 * (number_of_cells - 1);
+					cell = number_of_cells;
+				}
+				else {
+					ycu = y;
+					y -= 3;
+					cell -= 1;
+				}
+			}
+			else if (var == 80) { //xuong
+				if (x == locate_x - 1 && y == (locate_y + 1) + (number_of_cells - 1) * 3) {
+					ycu = y;
+					y -= 3 * (number_of_cells - 1);
+					cell = 1;
+				}
+				else {
+					ycu = y;
+					y += 3;
+					cell += 1;
+				}
+			}
+			else if (var == 13) {
+				if (cell == 1) cout << "A";
+				else if (cell == 2) {
+					system("cls");
+					string STUDENT_COUR_name_list_of_boxs[] = { "Create course","Update course","Delete course","Home","Return","Enroll","View student","Create mark","View scoreboard","Update result" };
+					STUDENT_COUR_PAGE(locate_x, locate_y, 10, STUDENT_COUR_name_list_of_boxs);
+					system("cls");
+					//
+					if (HOME == 4) return;
+					//
+					for (int i = 0; i < number_of_cells; i++) {
+						box(locate_x, locate_y + i * 3, 20, 2, 10, 11, SEMESTER_name_list_of_boxs[i]);
+					}
+				}
+				else if (cell == 3) cout << "C";
+				else if (cell == 4) {
+					HOME = 4;
+					return;
+				}
+				else if (cell == 5) break;
+			}
+		}
+
+
+	}
+}
+
+
+void STUDENT_PAGE(int locate_x, int locate_y, int number_of_cells, string STUDENT_name_list_of_boxs[]) {
+
+	for (int i = 0; i < number_of_cells; i++) {
+		box(locate_x, locate_y + i * 3, 20, 2, 10, 11, STUDENT_name_list_of_boxs[i]);
+	}
+	int x = locate_x - 1, y = locate_y + 1;
+	gotoxy(x, y);
+	cout << char(26);
+	int xcu = x, ycu = y;
+	bool hold = true;
+	int cell = 1;
+
+	while (true) {
+		if (hold == true) {
+			gotoxy(xcu, ycu);
+			cout << " ";
+			gotoxy(x, y);
+			cout << char(26);
+			hold = false;
+		}
+		if (_kbhit()) {
+			hold = true; // da bam
+			char var = _getch();
+
+			if (var == 72) { //len
+				if (x == locate_x - 1 && y == locate_y + 1) {
+					ycu = y;
+					y += 3 * (number_of_cells - 1);
+					cell = number_of_cells;
+				}
+				else {
+					ycu = y;
+					y -= 3;
+					cell -= 1;
+				}
+			}
+			else if (var == 80) { //xuong
+				if (x == locate_x - 1 && y == (locate_y + 1) + (number_of_cells - 1) * 3) {
+					ycu = y;
+					y -= 3 * (number_of_cells - 1);
+					cell = 1;
+				}
+				else {
+					ycu = y;
+					y += 3;
+					cell += 1;
+				}
+			}
+			else if (var == 13) {
+				if (cell == 1) cout << "A";
+				else if (cell == 2) {
+					HOME = 4;
+					return;
+				}
+				else if (cell == 3) break;
+			}
+		}
+
+
+	}
+}
+void CLASS_PAGE(int locate_x, int locate_y, int number_of_cells, string CLASS_name_list_of_boxs[]) {
+
+	for (int i = 0; i < number_of_cells; i++) {
+		box(locate_x, locate_y + i * 3, 20, 2, 10, 11, CLASS_name_list_of_boxs[i]);
+	}
+	int x = locate_x - 1, y = locate_y + 1;
+	gotoxy(x, y);
+	cout << char(26);
+	int xcu = x, ycu = y;
+	bool hold = true;
+	int cell = 1;
+
+	while (true) {
+		if (hold == true) {
+			gotoxy(xcu, ycu);
+			cout << " ";
+			gotoxy(x, y);
+			cout << char(26);
+			hold = false;
+		}
+		if (_kbhit()) {
+			hold = true; // da bam
+			char var = _getch();
+
+			if (var == 72) { //len
+				if (x == locate_x - 1 && y == locate_y + 1) {
+					ycu = y;
+					y += 3 * (number_of_cells - 1);
+					cell = number_of_cells;
+				}
+				else {
+					ycu = y;
+					y -= 3;
+					cell -= 1;
+				}
+			}
+			else if (var == 80) { //xuong
+				if (x == locate_x - 1 && y == (locate_y + 1) + (number_of_cells - 1) * 3) {
+					ycu = y;
+					y -= 3 * (number_of_cells - 1);
+					cell = 1;
+				}
+				else {
+					ycu = y;
+					y += 3;
+					cell += 1;
+				}
+			}
+			else if (var == 13) {
+				if (cell == 1) cout << "A";
+				else if (cell == 2) {
+					system("cls"); // doi ten, doi so luong
+					string STUDENT_name_list_of_boxs[] = { "Create student","Home","Return" }; // change
+					STUDENT_PAGE(locate_x, locate_y, 3, STUDENT_name_list_of_boxs); //change
+					system("cls");
+					//
+					if (HOME == 4) return;
+					//
+					for (int i = 0; i < number_of_cells; i++) {
+						box(locate_x, locate_y + i * 3, 20, 2, 10, 11, CLASS_name_list_of_boxs[i]);
+					}
+				}
+				else if (cell == 3) {
+					HOME = 4;
+					return;
+				}
+				else if (cell == 4) break;
+			}
+		}
+
+
+	}
+}
+void YEAR_PAGE(int locate_x, int locate_y, int number_of_cells, string YEAR_name_list_of_boxs[]) {
+
+	for (int i = 0; i < number_of_cells; i++) {
+		box(locate_x, locate_y + i * 3, 20, 2, 10, 11, YEAR_name_list_of_boxs[i]);
+	}
+	int x = locate_x - 1, y = locate_y + 1;
+	gotoxy(x, y);
+	cout << char(26);
+	int xcu = x, ycu = y;
+	bool hold = true;
+	int cell = 1;
+
+	while (true) {
+		if (hold == true) {
+			gotoxy(xcu, ycu);
+			cout << " ";
+			gotoxy(x, y);
+			cout << char(26);
+			hold = false;
+		}
+		if (_kbhit()) {
+			hold = true; // da bam
+			char var = _getch();
+
+			if (var == 72) { //len
+				if (x == locate_x - 1 && y == locate_y + 1) {
+					ycu = y;
+					y += 3 * (number_of_cells - 1);
+					cell = number_of_cells;
+				}
+				else {
+					ycu = y;
+					y -= 3;
+					cell -= 1;
+				}
+			}
+			else if (var == 80) { //xuong
+				if (x == locate_x - 1 && y == (locate_y + 1) + (number_of_cells - 1) * 3) {
+					ycu = y;
+					y -= 3 * (number_of_cells - 1);
+					cell = 1;
+				}
+				else {
+					ycu = y;
+					y += 3;
+					cell += 1;
+				}
+			}
+			else if (var == 13) {
+				if (cell == 1) cout << "A";
+				else if (cell == 2) {
+					system("cls");
+					string CLASS_name_list_of_boxs[] = { "Create class","View student","Home","Return" };
+					CLASS_PAGE(locate_x, locate_y, 4, CLASS_name_list_of_boxs);
+					system("cls");
+					//
+					if (HOME == 4) return;
+					//
+					for (int i = 0; i < number_of_cells; i++) {
+						box(locate_x, locate_y + i * 3, 20, 2, 10, 11, YEAR_name_list_of_boxs[i]);
+					}
+				}
+				else if (cell == 3) {
+					system("cls");
+					string SEMESTER_name_list_of_boxs[] = { "Create semester","View semester","Home","Return" };
+					SEMESTER_PAGE(60, 10, 4, SEMESTER_name_list_of_boxs);
+					system("cls");
+					//
+					if (HOME == 4) return;
+					//
+					for (int i = 0; i < number_of_cells; i++) {
+						box(locate_x, locate_y + i * 3, 20, 2, 10, 11, YEAR_name_list_of_boxs[i]);
+					}
+				}
+				else if (cell == 4) {
+					HOME = 4;
+					return;
+				}
+				else if (cell == 5) break;
+			}
+		}
+
+
+	}
+}
+
+void HOME_PAGE(int locate_x,int locate_y, int number_of_cells, string HOME_name_list_of_boxs[]) {
+
+	for (int i = 0; i < number_of_cells; i++) {
+		box(locate_x, locate_y + i * 3, 20, 2, 10, 11, HOME_name_list_of_boxs[i]);
+	}
+	int x = locate_x - 1, y = locate_y + 1;
+	gotoxy(x, y);
+	cout << char(26);
+	int xcu = x, ycu = y;
+	bool hold = true;
+	int cell = 1;
+
+	while (true) {
+		HOME = 0;
+		if (hold == true) {
+			gotoxy(xcu, ycu);
+			cout << " ";
+			gotoxy(x, y);
+			cout << char(26);
+			
+			hold = false;
+		}
+		if (_kbhit()) {
+			hold = true; // da bam
+			char var = _getch();
+
+			if (var == 72) { //len
+				if (x == locate_x - 1 && y == locate_y + 1) {
+					ycu = y;
+					y += 3 * (number_of_cells - 1);
+					cell = number_of_cells;
+				}
+				else {
+					ycu = y;
+					y -= 3;
+					cell -= 1;
+				}
+			}
+			else if (var == 80) { //xuong
+				if (x == locate_x - 1 && y == (locate_y + 1) + (number_of_cells - 1) * 3) {
+					ycu = y;
+					y -= 3 * (number_of_cells - 1);
+					cell = 1;
+				}
+				else {
+					ycu = y;
+					y += 3;
+					cell += 1;
+				}
+			}
+			else if (var == 13) {
+				if (cell == 1) {
+					system("cls");
+					string YEAR_name_list_of_boxs[] = { "Create year","View classes","View semesters","Home","Return"};
+					YEAR_PAGE(locate_x, locate_y, 5, YEAR_name_list_of_boxs);
+					system("cls");
+
+					for (int i = 0; i < number_of_cells; i++) {
+						box(locate_x, locate_y + i * 3, 20, 2, 10, 11, HOME_name_list_of_boxs[i]);
+					}
+				}
+				else if (cell == 2) cout << "B";
+				else if (cell == 3) break;
+			}
+		}
+
+
+	}
+}
+
+int main() {
+    system("cls");
+    Year* year = NULL;
+    //test(year);
+    Nocursortype();
+	string HOME_name_list_of_boxs[] = { "HOME","CURRENT TIME","LOG OUT" };
+	HOME_PAGE(60,10, 3, HOME_name_list_of_boxs);
+    //Interface_Staff(year);
 }
