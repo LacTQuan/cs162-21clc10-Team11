@@ -686,7 +686,7 @@ void Create_Student(Class *&classes){
         }    
     } 
     filein.close();
-    // create_account()
+    // create_account(head, )
 }
 Year* Import_Year(Year* year){
     if(year == NULL) return NULL;
@@ -1075,6 +1075,12 @@ struct Account{
 struct User{
     string username, password;
 };
+bool isStaff(string username){
+    if (username.find('@') != string::npos) // username co '@' la staff
+        return true;
+    else
+        return false;
+}
 bool account_check(Account *head, string username, string password){
     bool success = false;
     Account *cur = head;
@@ -1119,9 +1125,47 @@ void save_account_list(Account *head){
     }
     changeFile.close();
 }
-void create_account(){
+//************************************************************
+// If new students have been added in the general profile,   *
+// before the program ends, a number of new student accounts * 
+// are created with default password 123456789.              *
+//                                                           *
+// Note: new students must be added to the end of profile    *
+//************************************************************
+void create_student_account(Account *head){
+    if (head == nullptr)
+        return;
+    
+    Account *cur = head;
+    while (cur->next && isStaff(cur->next->username))
+        cur = cur->next;
+    
+    string line, trash;
+    fstream infile("profile.csv", ios::in);
 
+    // find the farthest position in the profile where a student already has an account.
+    while (infile.eof() == false && cur->next && line == cur->username){
+        getline(infile, trash, ',');
+        getline(infile, line, ',');
+        getline(infile, trash, '\n');
+        cur = cur->next;
+    }
+
+    if (infile.eof() == false){
+        do{
+            getline(infile, trash, ',');
+            getline(infile, line, ',');
+            getline(infile, trash, '\n');
+            cur->next = new Account;
+            cur = cur->next;
+            cur->username = line;
+            cur->password = "123456789";
+            cur->next = nullptr;
+        }while (infile.eof() == false);
+    }
+    infile.close();
 }
+
 void delete_account_list(Account *&head){
     Account *temp = nullptr;
     while (head){
@@ -1141,6 +1185,48 @@ void change_password(Account *head, string username, string newPassword){
     else
         cur->password = newPassword;
     return;
+}
+// new
+void view_profile(User U){
+    system("cls");
+
+    ifstream infile;
+    string line;
+    if (isStaff(U.username)){
+        cout << "PROFILE:\n";
+        cout << "Email: ";
+        cout << U.username << endl;
+        infile.open("staff_profile.csv");
+        while (infile.eof() == false){
+            getline(infile, line, ',');
+            if (line != U.username)
+                getline(infile, line, '\n');
+            else
+                break;
+        }
+        getline(infile, line, ',');     cout << "Full name: " << line << endl;
+        getline(infile, line, ',');     cout << "Gender: " << line << endl;
+        getline(infile, line, ',');     cout << "Date of birth: " << line << endl;
+        getline(infile, line, '\n');    cout << "Social ID: " << line << endl;
+    }
+    else{
+        cout << "Student ID: ";
+        cout << U.username << endl;
+        infile.open("profile.csv");
+        while (infile.eof() == false){
+            getline(infile, line, ',');
+            if (line != U.username)
+                getline(infile, line, '\n');
+            else
+                break;
+        }
+        getline(infile, line, ',');     cout << "Full name: " << line << endl;
+        getline(infile, line, ',');     cout << "Gender: " << line << endl;
+        getline(infile, line, ',');     cout << "Date of birth: " << line << endl;
+        getline(infile, line, '\n');    cout << "Social ID: " << line << endl;
+    }
+    getchar();
+    infile.close();
 }
 void Interface_Student(Year* year, Semester* sem, string Student_ID) {
     int choose_1;
@@ -1182,7 +1268,7 @@ void Interface_Student(Year* year, Semester* sem, string Student_ID) {
         }
     } while (choose_1 != 2);
 }
-void Interface_Staff(Year* &year){
+void Interface_Staff(Year* &year, User U){
     int choose_1;
     do{
         HOME:
@@ -1369,33 +1455,11 @@ void Interface_Staff(Year* &year){
                 if(choose_2 == 4) goto HOME;
             }while(choose_2 != 5);
         }
-        // else if (choose_1 == 2){
-        //     view_profile()
-        // }
+        else if (choose_1 == 2){
+            view_profile(U);
+            getchar();
+        }
     }while(choose_1 != 3);
-}
-void view_profile(User U){
-    ifstream infile;
-    if (isStaff(U)){
-        cout << "Email: ";
-        cout << U.username << endl;
-        infile.open("staff_profile.csv");
-
-
-    }
-    else{
-        cout << "Student ID: ";
-        cout << U.username << endl;
-        infile.open("profile.csv");
-
-    }
-    infile.close();
-}
-bool isStaff(User U){
-    if ((U.username).find('@') != string::npos) // username co '@' la staff
-        return true;
-    else
-        return false;
 }
 void Interface(Year* &year) {
     User U;
@@ -1418,10 +1482,10 @@ void Interface(Year* &year) {
                 cout << "Log in successfully.\n";
                 cin.ignore();
                 getchar();
-                if (isStaff(U)) // staff
-                    Interface_Staff(year);
+                if (isStaff(U.username)) // staff
+                    Interface_Staff(year, U);
                 else // student
-                    Interface_Staff(year); //Interface_Student();
+                    Interface_Staff(year, U); //Interface_Student();
                 goto LOGIN;
             }
             else{
@@ -1452,11 +1516,12 @@ void Interface(Year* &year) {
                 goto LOGIN;
             }
         }
+
     }while (choice != 3);
+    create_student_account(account_head);
+    save_account_list(account_head);
     delete_account_list(account_head);
     return;
-    // student account ---> Interface_Student
-    // staff account ---> Interface_Staff
 }
 int main(){
     Year* year = nullptr;
