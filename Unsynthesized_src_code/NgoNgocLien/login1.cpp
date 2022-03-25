@@ -47,8 +47,10 @@ Account *load_account_list(){
 void save_account_list(Account *head){
     fstream changeFile("account.csv", ios::out); // rewrite file
     Account *cur = head;
+    changeFile << cur->username << ',' << cur->password;
+    cur = cur->next;
     while (cur){
-        changeFile << cur->username << ',' << cur->password << '\n';
+        changeFile << '\n'<< cur->username << ',' << cur->password;
         cur = cur->next;
     }
     changeFile.close();

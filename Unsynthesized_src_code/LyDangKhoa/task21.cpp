@@ -724,7 +724,21 @@ void Delete_Enrolled_Course(Student*& student, Course*& course) {
         delete pDel2;
     }
 }
-
+void Export_Course(Course* course) {
+    Student_Course* stu_cour = course->pStudent_Course;
+    ofstream fileout;
+    int cnt = 1;
+    string s = course->Course_Name;
+    fileout.open(s + ".csv");
+    fileout << "No" << "," << "ID" << "," << "Full name" << "," << "Total mark" << "," << "Final mark" << "," << "Midterm mark" << "," << "Other marks";
+    while (stu_cour != nullptr) {
+        fileout << endl;
+        fileout << cnt++ << "," << stu_cour->StudentID << "," << stu_cour->FirstName + " " + stu_cour->LastName << stu_cour->mark.Total << "," << stu_cour->mark.Final << ","
+        << stu_cour->mark.Midterm << "," << stu_cour->mark.Other;
+        stu_cour = stu_cour->pNext_Student_Course;
+    }
+    fileout.close();
+}
 // find student
 Student* find_student_in_1_class(Class* classes, string Student_ID) {
     if (classes->pStudent == NULL) return NULL;
@@ -810,7 +824,8 @@ void Delete_Enrolled_Course_main(Year*& year, Semester*& semester) {
         return;
     }
     //view all course
-    //View_Enrolled_Course(student);
+    View_Enrolled_Course(student);
+    cout << endl;
     string course_name;
     cout << "Course you want to delete: ";
     cin >> course_name;
@@ -825,18 +840,6 @@ void Delete_Enrolled_Course_main(Year*& year, Semester*& semester) {
 
     Delete_Enrolled_Course(student, Del_Cour);
 }
-// task 21
-void Export_Course(Course* course) {
-    Student_Course* stu_cour = course->pStudent_Course;
-    ofstream fileout;
-    fileout.open("student course.csv");
-    while (fileout.eof() == false) {
-        if (stu_cour != NULL)
-            fileout << stu_cour->No << "," << stu_cour->StudentID << "," << stu_cour->FirstName << "," << stu_cour->LastName << stu_cour->Date_of_Birth << endl;
-            stu_cour = stu_cour->pNext_Student_Course;
-    }
-    fileout.close();
-}
 void Export_Course_main(Year*& year, Semester*& semester) {
     string course_name;
     cout << "Choose a course you want to get students' data: ";
@@ -850,6 +853,7 @@ void Export_Course_main(Year*& year, Semester*& semester) {
     }
     Export_Course(export_course);
 }
+
 void Interface(Year*& year) {
     int choose_1;
     do {
