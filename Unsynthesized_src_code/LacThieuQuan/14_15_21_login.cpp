@@ -69,8 +69,6 @@ struct Time{
     int date;
     int month;
     int year;
-    int hour;
-    int minute;
 };
 struct Registration_Session{
     Time start;
@@ -87,6 +85,7 @@ struct Account{
     Account *next;
 };
 
+Registration_Session S;
 
 bool account_check(Account *head, string username, string password){
     bool success = false;
@@ -153,58 +152,11 @@ void change_password(Account *head, string username, string newPassword){
     return;
 }
 
-void login_main(){
-    Account *account_head = load_account_list();
-    int choice;
-    do{
-        LOGIN:
-        cout << "1. Log in\n";
-        cout << "2. Change password\n";
-        cout << "3. Exit\n";
-        cout << "-> Enter choice: "; cin >> choice;
-        string username, password;
-        if (choice == 1){
-            cout << "Enter username: ";
-            cin >> username;
-            cout << "Enter password: ";
-            cin >> password;
-            if (account_check(account_head, username, password)){
-                cout << "Log in successfully.\n";
-                cin.ignore();
-                getchar();
-                //do{...}
-                goto LOGIN; ////////////////////////////////////////////////////////////////////////
-            }
-            else{
-                cout << "Username or password is incorrect.\n";
-                cin.ignore();
-                getchar();
-                goto LOGIN;
-            }
-        }
-        if (choice == 2){
-            string newPassword;
-            cout << "Enter username: "; cin >> username;
-            cout << "Enter old password: "; cin >> password;
-            if (account_check(account_head, username, password)){
-                cout << "Enter new password: "; cin >> newPassword;
-                change_password(account_head, username, newPassword);
-                cout << "Password has been changed.\n";
-                cin.ignore();
-                getchar();
-                goto LOGIN; //////////////////////////////////////////////////////////////////
-            }
-            else{
-                cout << "Username or password is incorrect";
-                cin.ignore();
-                getchar();
-                goto LOGIN;
-            }
-        }
-    }while (choice != 3);
-    save_account_list(account_head);
-    delete_account_list(account_head);
-}
+// void Add_New_Account(Account* head) {
+//     Account* cur = head;
+//     while (cur != nullptr && cur->next != nullptr) cur = cur->next;
+//     if ()
+// }
 void Create_Course(Semester* sem) { 
     ifstream filein("course.csv");
     while(filein.eof() == false){
@@ -364,8 +316,7 @@ void Create_Semester(Year *&year){
         pCur_Semester->pNext_Semester = Temp_Semester;
     }
 }
-Registration_Session create_Registration_Session(){
-    Registration_Session S;
+void create_Registration_Session(){
     cout << "Create Registration Session: \n";
     cout << "Start time: \n";
     cout << "Date: ";
@@ -374,10 +325,6 @@ Registration_Session create_Registration_Session(){
     cin >> S.start.month;
     cout << "Year: ";
     cin >> S.start.year;
-    cout << "Hour: ";
-    cin >> S.start.hour;
-    cout << "Minute: ";
-    cin >> S.start.minute;
 
     cout << "End time: \n";
     cout << "Date: ";
@@ -386,12 +333,16 @@ Registration_Session create_Registration_Session(){
     cin >> S.end.month;
     cout << "Year: ";
     cin >> S.end.year;
-    cout << "Hour: ";
-    cin >> S.end.hour;
-    cout << "Minute: ";
-    cin >> S.end.minute;
-
-    return S;
+}
+bool Check_Regis_Time() {
+    time_t now = time(0);
+    tm* t = localtime(&now);
+    int year = t->tm_year + 1900, mon = t->tm_mon + 1, day = t->tm_mday;
+    if (year != S.start.year) return 0;
+    if (mon < S.start.month || mon > S.end.month) return 0;
+    if (mon == S.start.month && day < S.start.date) return 0;
+    if (mon == S.end.month && day > S.end.date) return 0;
+    return 1;
 }
 void Update_Course(Semester* sem){
     string s = "";
@@ -890,28 +841,31 @@ void Enroll_Course(Course* &course_regis, Student* &student){
 
 //enroll main
 void enroll_main(Year* &year, Semester* &semester){
-    string studentID;
-    cout<<"StudentID "; cin>>studentID;
+    if (Check_Regis_Time()) {
+        string studentID;
+        cout<<"StudentID "; cin>>studentID;
 
-    Student* student = find_student_in_many_classes(year, studentID);
-    if(student == NULL){
-        cout<<"invalid student"<<endl;
-    cin.ignore();
-    getchar();
-        return;
-    }
-    //view all course
-    string course_name;
-    cout<<"Course you want to choose "; cin>>course_name;
-    Course* course_regis = find_course_in_many_subjects(semester,course_name);
-    if(course_regis == NULL){
-        cout<<"invalid course_register"<<endl;
+        Student* student = find_student_in_many_classes(year, studentID);
+        if(student == NULL){
+            cout<<"invalid student"<<endl;
         cin.ignore();
         getchar();
-        return;
-    }
+            return;
+        }
+        //view all course
+        string course_name;
+        cout<<"Course you want to choose "; cin>>course_name;
+        Course* course_regis = find_course_in_many_subjects(semester,course_name);
+        if(course_regis == NULL){
+            cout<<"invalid course_register"<<endl;
+            cin.ignore();
+            getchar();
+            return;
+        }
 
-    Enroll_Course(course_regis,student);
+        Enroll_Course(course_regis,student);
+    }
+    else cout<<"Over time!"<<endl;
 }
 
 
@@ -1101,7 +1055,23 @@ void update_student_result(Year* year, Semester* sem){
 
 }
 */
-void Interface_Student(Year* year, Semester* sem, string Student_ID) {
+void Interface_Student(Year* year, string Student_ID) {
+    if (year == nullptr) {
+        cout<<"No year was created!";
+        return;
+    }
+    Semester* sem = nullptr;
+    SEMESTER:
+    cout<<"-----------SEMESTER----------"<<endl;
+    Print_Semester(year);
+    cout<<"-----------------------------"<<endl;
+    do {
+        system("cls");
+        cout<<"Select a semester: ";
+        string s;
+        cin>>s;
+        sem = find_semester(year->pSemester, s);
+    } while(sem != nullptr);
     int choose_1;
     do {
         HOME:
@@ -1352,16 +1322,94 @@ void Interface_Staff(Year* &year){
         }
     }while(choose_1 != 2);
 }
-void Interface() {
-    cout << "1.Log in" << endl;
-    cout << "2.Exit" << endl;
-    // student account ---> Interface_Student
-    // staff account ---> Interface_Staff
+void login_main(Year* &year){
+    Account *account_head = load_account_list();
+    string username, password;
+    int choice;
+    do{
+        LOGIN:
+        cout << "1. Log in\n";
+        cout << "2. Sign up\n";
+        cout << "3. Exit\n";
+        cout << "-> Enter choice: "; cin >> choice;
+        if (choice == 1){
+            cout << "Enter username: ";
+            cin >> username;
+            cout << "Enter password: ";
+            cin >> password;
+            if (account_check(account_head, username, password)){
+                cout << "Log in successfully.\n";
+                cin.ignore();
+                getchar();
+                system("cls");
+                int choice_2;
+                do {
+                    CHANGE_PASS:
+                    cout<< "1.Change password\n";
+                    cout<< "2.Log out\n";
+                    cout<<"3.Home page\n"; 
+                    cout << "Enter choice: "; cin >> choice_2;
+                    if (choice_2 == 1) {
+                        string newPassword;
+                        cout << "Enter username: "; cin >> username;
+                        cout << "Enter old password: "; cin >> password;
+                        if (account_check(account_head, username, password)){
+                            cout << "Enter new password: "; cin >> newPassword;
+                            change_password(account_head, username, newPassword);
+                            cout << "Password has been changed.\n";
+                            cin.ignore();
+                            getchar();
+                            goto CHANGE_PASS;
+                        }
+                        else{
+                            cout << "Username or password is incorrect";
+                            cin.ignore();
+                            getchar();
+                            goto CHANGE_PASS;
+                        }
+                    }
+                    if (choice_2 == 3) {
+                        if (username.back() == 'n')
+                            Interface_Staff(year);
+                        else 
+                            Interface_Student(year, username);
+                        goto LOGIN;
+                    }
+                } while (choice_2 != 2);
+            }
+            else{
+                cout << "Username or password is incorrect.\n";
+                cin.ignore();
+                getchar();
+                goto LOGIN;
+            }
+        }
+        else if (choice == 2){
+            // cout << "Enter username: "; cin >> username;
+            // cout << "Enter password: "; cin >> password;
+            // if (account_check(account_head, username, password)){
+            //     cout << "Enter new password: "; cin >> newPassword;
+            //     change_password(account_head, username, newPassword);
+            //     cout << "Password has been changed.\n";
+            //     cin.ignore();
+            //     getchar();
+            //     goto LOGIN; //////////////////////////////////////////////////////////////////
+            // }
+            // else{
+            //     cout << "Username or password is incorrect";
+            //     cin.ignore();
+            //     getchar();
+            //     goto LOGIN;
+            // }
+
+
+            /* SIGN UP*/
+        }
+    }while (choice != 3);
+    save_account_list(account_head);
+    delete_account_list(account_head);
 }
 int main(){
-    Year* year = NULL;
-    //test(year);
-
-    Interface_Staff(year);
-    // login_main();
+    Year* year = nullptr;
+    login_main(year);
 }
