@@ -32,6 +32,7 @@ struct Class {
 //left
 struct Student_Course {
     string No, StudentID, FirstName, LastName, Gender, Date_of_Birth, SocialID;
+    Mark mark;
     Student_Course* pNext_Student_Course;
     Student* pStudent;
 };
@@ -687,8 +688,8 @@ void View_Enrolled_Course(Student* student) {
 void Delete_Enrolled_Course(Student*& student, Course*& course) {
     Cur_Course* pCur1 = student->pCur_Cour;
     Student_Course* pCur2 = course->pStudent_Course;
-    while (pCur1 == NULL || pCur2 == NULL) {
-        cout << "You haven't enrolled any courses!" << endl;
+    while (student->pCur_Cour == NULL || course->pStudent_Course == NULL) {
+        cout << "You haven't enrolled this course yet!";
         cin.ignore();
         getchar();
         return;
@@ -724,21 +725,7 @@ void Delete_Enrolled_Course(Student*& student, Course*& course) {
         delete pDel2;
     }
 }
-void Export_Course(Course* course) {
-    Student_Course* stu_cour = course->pStudent_Course;
-    ofstream fileout;
-    int cnt = 1;
-    string s = course->Course_Name;
-    fileout.open(s + ".csv");
-    fileout << "No" << "," << "ID" << "," << "Full name" << "," << "Total mark" << "," << "Final mark" << "," << "Midterm mark" << "," << "Other marks";
-    while (stu_cour != nullptr) {
-        fileout << endl;
-        fileout << cnt++ << "," << stu_cour->StudentID << "," << stu_cour->FirstName + " " + stu_cour->LastName << stu_cour->mark.Total << "," << stu_cour->mark.Final << ","
-        << stu_cour->mark.Midterm << "," << stu_cour->mark.Other;
-        stu_cour = stu_cour->pNext_Student_Course;
-    }
-    fileout.close();
-}
+
 // find student
 Student* find_student_in_1_class(Class* classes, string Student_ID) {
     if (classes->pStudent == NULL) return NULL;
@@ -775,7 +762,7 @@ Course* find_course_in_many_subjects(Semester* semester, string course) {
 //enroll main
 void enroll_main(Year*& year, Semester*& semester) {
     string studentID;
-    cout << "StudentID "; cin >> studentID;
+    cout << "StudentID: "; cin >> studentID;
 
     Student* student = find_student_in_many_classes(year, studentID);
     if (student == NULL) {
@@ -814,7 +801,7 @@ void View_Enrolled_Course_main(Year*& year, Semester*& semester) {
 }
 void Delete_Enrolled_Course_main(Year*& year, Semester*& semester) {
     string studentID;
-    cout << "Your studentID ";
+    cout << "Your studentID: ";
     cin >> studentID;
     Student* student = find_student_in_many_classes(year, studentID);
     if (student == NULL) {
@@ -824,8 +811,7 @@ void Delete_Enrolled_Course_main(Year*& year, Semester*& semester) {
         return;
     }
     //view all course
-    View_Enrolled_Course(student);
-    cout << endl;
+    //View_Enrolled_Course(student);
     string course_name;
     cout << "Course you want to delete: ";
     cin >> course_name;
@@ -836,9 +822,22 @@ void Delete_Enrolled_Course_main(Year*& year, Semester*& semester) {
         getchar();
         return;
     }
-    cout << "This course is" << Del_Cour->Course_Name << endl;
-
     Delete_Enrolled_Course(student, Del_Cour);
+}
+void Export_Course(Course* course) {
+    Student_Course* stu_cour = course->pStudent_Course;
+    ofstream fileout;
+    int cnt = 1;
+    string s = course->Course_Name;
+    fileout.open(s + ".csv");
+    fileout << "No" << "," << "ID" << "," << "Full name" << "," << "Total mark" << "," << "Final mark" << "," << "Midterm mark" << "," << "Other mark";
+    while (stu_cour != nullptr) {
+        fileout << endl;
+        fileout << cnt++ << "," << stu_cour->StudentID << "," << stu_cour->FirstName + " " + stu_cour->LastName << stu_cour->mark.Total << "," << stu_cour->mark.Final << ","
+        << stu_cour->mark.Midterm << "," << stu_cour->mark.Other;
+        stu_cour = stu_cour->pNext_Student_Course;
+    }
+    fileout.close();
 }
 void Export_Course_main(Year*& year, Semester*& semester) {
     string course_name;
@@ -853,7 +852,76 @@ void Export_Course_main(Year*& year, Semester*& semester) {
     }
     Export_Course(export_course);
 }
+Class* find_class_in_many_classes(Year* year, string class_name){
+    if (year->pClass == NULL) return NULL;
+    Class* pCur_Class = year->pClass;
 
+    while(pCur_Class != NULL){
+        if (pCur_Class->name == class_name) return pCur_Class;
+        pCur_Class = pCur_Class->pNext_Class;
+    }
+    return NULL;
+}
+void View_Class_Scoreboard(Class* class_name){
+    cout << "Class\tFull name\tFinal mark" << endl;
+    Student_Course* pStu_Cour = new Student_Course;
+    Student* pStu = new Student;
+    Cur_Course* pCur = class_name->pStudent->pCur_Cour;
+    if (pCur != NULL){
+        cout << "Cannot find any classes!" << endl;
+    }
+    else{
+        Cur_Course* pView_Class = class_name->pStudent->pCur_Cour;
+        while (pView_Class != NULL){
+            cout << pView_Class->mark.Final << endl;
+            pView_Class = pView_Class->pNext_Cur_Cour;
+        }
+    }
+}
+void View_Class_Scoreboard_main(Year*& year, Semester*& semester){
+    string class_name;
+    cout << "Class you want to view scoreboard: ";
+    cin >> class_name;
+    Class* class_regis = find_class_in_many_classes(year, class_name);
+    if (class_regis == NULL){
+        cout << "Class name not found!" << endl;
+        cin.ignore();
+        getchar();
+        return;
+    }
+    View_Class_Scoreboard(class_regis);
+    cin.ignore();
+    getchar();
+}
+void Student_View_Scoreboard(Student* student){
+    Cur_Course* pCur_Cour = new Cur_Course;
+    if(student->pCur_Cour == NULL){
+        cout << "The staff member haven't inputted your scores yet!" << endl;
+    }
+    else{
+        Cur_Course* pView = student->pCur_Cour;
+        cout << "All of your results are: ";
+        while(pView != NULL){
+            cout << pView->mark.Final << endl;
+            pView = pView->pNext_Cur_Cour;
+        }
+    }
+}
+void Student_View_Scoreboard_main(Year*& year, Semester*& semester) {
+    string studentID;
+    cout << "Your student ID: ";
+    cin >> studentID;
+    Student* student = find_student_in_many_classes(year, studentID);
+    if (student == NULL) {
+        cout << "Student ID not found!" << endl;
+        cin.ignore();
+        getchar();
+        return;
+    }
+    Student_View_Scoreboard(student);
+    cin.ignore();
+    getchar();
+}
 void Interface(Year*& year) {
     int choose_1;
     do {
@@ -1006,6 +1074,8 @@ void Interface(Year*& year) {
                                 cout << "7.View enrolled course" << endl;
                                 cout << "8.Delete enrolled course" << endl;
                                 cout << "9.Export student list in a course" << endl;
+                                cout << "10.View a class's scoreboard" << endl;
+                                cout << "11.Student views his/her scoreboard" << endl;
                                 cout << "->Enter choose "; cin >> choose_4;
                                 if (choose_4 == 1) {
                                     system("cls");
@@ -1038,6 +1108,14 @@ void Interface(Year*& year) {
                                 else if (choose_4 == 9) {
                                     system("cls");
                                     Export_Course_main(import_year, import_sem);
+                                }
+                                else if (choose_4 == 10){
+                                    system("cls");
+                                    View_Class_Scoreboard_main(import_year, import_sem);
+                                }
+                                else if (choose_4 == 11){
+                                    system("cls");
+                                    Student_View_Scoreboard_main(import_year, import_sem);
                                 }
                                 if (choose_4 == 4) goto HOME;
                             } while (choose_4 != 5);
