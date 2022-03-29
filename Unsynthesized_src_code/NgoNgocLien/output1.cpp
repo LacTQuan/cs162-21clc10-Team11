@@ -689,10 +689,30 @@ void Delete_Enrolled_Course_main(Year*& year, Semester*& semester, string studen
 
     }else cout<<"Over time!";
 }
-void Create_Year(Year* &year){
+bool yearExists(Year *year, string findYear){ // new
+    Year *pCurYear = year;
+    while (pCurYear && pCurYear->name != findYear)
+        pCurYear = pCurYear->pNext_Year;
+    if (pCurYear == nullptr)
+        return false;
+    else
+        return true;
+}
+void Create_Year(Year* &year){ // fixed
     string name_year;
-    cout<<"Import academic year (ex: 2021) ";
-    cin >> name_year;
+    bool exist = false;
+    do{
+        exist = false;
+        cout<<"Import academic year (ex: 2021) ";
+        cin >> name_year;
+        if (yearExists(year, name_year)){
+            exist = true;
+            Textcolor(4);
+            cout << "Year already exists.\n";
+            Textcolor(11);
+        }
+    } while (exist);
+    
     Year* pCur_Year = year;
 
     Year* Temp_Year = new Year;
@@ -707,10 +727,30 @@ void Create_Year(Year* &year){
         pCur_Year->pNext_Year = Temp_Year;
     }
 }
-void Create_Class(Year* &year){
+bool classExists(Year* year, string findClass){ // new
+    Class* pCurClass = year->pClass;
+    while (pCurClass && pCurClass->name != findClass)
+        pCurClass = pCurClass->pNext_Class;
+    if (pCurClass == nullptr)
+        return false;
+    else
+        return true;
+}
+void Create_Class(Year* &year){ // fixed
     string name_class;
-    cout<<"Import class (ex:21CLC10) ";
-    cin >> name_class;
+    bool exist = false;
+    do{
+        exist = false;
+        cout<<"Import class (ex:21CLC10) ";
+        cin >> name_class;
+        if (classExists(year, name_class)){
+            exist = true;
+            Textcolor(4);
+            cout << "Class already exists.\n";
+            Textcolor(11);
+        }
+    } while (exist);
+
     Class* pCur_Class = year->pClass;
 
     Class* Temp_Class = new Class;
@@ -718,9 +758,11 @@ void Create_Class(Year* &year){
     Temp_Class->pNext_Class = NULL;
     Temp_Class->pStudent = NULL;
 
-    if(year->pClass == NULL) year->pClass = Temp_Class;
+    if(year->pClass == NULL) 
+        year->pClass = Temp_Class;
     else{
-        while(pCur_Class->pNext_Class != NULL) pCur_Class = pCur_Class->pNext_Class;
+        while(pCur_Class->pNext_Class != NULL) 
+            pCur_Class = pCur_Class->pNext_Class;
         pCur_Class->pNext_Class = Temp_Class;
     }
 }
@@ -832,23 +874,22 @@ void Add_1_Student(Class* import_class, string student_id) {
 void Add_1_Student_main(Year* year,Class *&classes ) {
     string student_id;
     Student* stu = nullptr;
-    
+    bool exist = false;
     do {
-        do{
-            system("cls");
-            cout<<"Enter the new student's ID (existed ID is not allowed): "; cin>>student_id;
-            if (student_id.length() > 8){
-                Textcolor(4);
-                cout << "Invalid ID.\n";
-                cin.ignore(1000, '\n');
-                getchar();
-
-                Textcolor(11);
-            }
-        } while (student_id.length() > 8);
-        
+        exist = false;
+        system("cls");
+        cout<<"Enter the new student ID: "; cin>>student_id;
         stu = find_student_in_many_classes(year, student_id);
-    } while (stu != nullptr);
+
+        if (stu != nullptr){
+            exist = true;
+            Textcolor(4);
+            cout << "ID already existed.\n";
+            Textcolor(11);
+            cin.ignore(1000, '\n');
+            getchar();
+        }
+    } while (exist);
     
     Add_1_Student(classes, student_id);
     cout<<"Added!"<<endl;
