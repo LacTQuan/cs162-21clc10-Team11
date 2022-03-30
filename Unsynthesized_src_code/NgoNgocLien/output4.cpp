@@ -1332,7 +1332,7 @@ void update_student_result(Year* &year, Semester* &sem){
 }
 void View_Class_Scoreboard_main(Class* classes){ 
     if (classes->pStudent == NULL){
-        cout << "No students are added in the class!" << endl;
+        cout << "No student is added in the class!" << endl;
         return;
     }
     cout<<"___________________________________________________________________\n";
@@ -1341,16 +1341,21 @@ void View_Class_Scoreboard_main(Class* classes){
     Student* pStudent = classes->pStudent;
     string s = "";
     while (pStudent != NULL){
+        cout << "            |                                    |";
         // print title
         
         Cur_Course* pCur_Cour;
         if(pStudent->pCur_Cour != NULL){
             pCur_Cour = pStudent->pCur_Cour;
             while(pCur_Cour != NULL){
-                cout<<pCur_Cour->Course_Name<<"\t";
+                cout<< setw(11) << left << pCur_Cour->Course_Name;
+                // pCur_Cour = pCur_Cour->pNext_Cur_Cour;
+                if (pCur_Cour != NULL)
+                    cout << " | ";
             }  
         }
-    
+        cout << '\n';
+
         //print concept
         cout << ' ' << setw(10) << left << pStudent->StudentID << " | ";
         s = pStudent->LastName + " " + pStudent->FirstName;
@@ -1370,7 +1375,7 @@ void View_Class_Scoreboard_main(Class* classes){
                 // courses's quantity
                 count++;
                 // print each course's score          
-                cout<< setw(4) << right << pCur_Cour->mark.Final<<" | ";
+                cout<< setw(11) << right << pCur_Cour->mark.Final<<" | ";
             }
             GPA_this_semester = int(GPA_this_semester* 10)/10.0;
             Textcolor(14);
