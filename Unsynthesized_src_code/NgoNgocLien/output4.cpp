@@ -1334,28 +1334,28 @@ void View_Class_Scoreboard_main(Class* classes){
     if (classes->pStudent == NULL){
         cout << "No student is added in the class!" << endl;
         return;
-    }
+    }   
     cout<<"___________________________________________________________________\n";
-    cout<<" Student ID |             Full name              | Course's Marks  \n";
+    cout<<" Student ID |             Full name              |      Marks      \n";
     cout<<"____________|____________________________________|_________________\n";
     Student* pStudent = classes->pStudent;
     string s = "";
+    
     while (pStudent != NULL){
         cout << "            |                                    |";
         // print title
-        
         Cur_Course* pCur_Cour;
         if(pStudent->pCur_Cour != NULL){
             pCur_Cour = pStudent->pCur_Cour;
             while(pCur_Cour != NULL){
                 cout<< setw(11) << left << pCur_Cour->Course_Name;
-                // pCur_Cour = pCur_Cour->pNext_Cur_Cour;
+                pCur_Cour = pCur_Cour->pNext_Cur_Cour;
                 if (pCur_Cour != NULL)
                     cout << " | ";
             }  
         }
         cout << '\n';
-
+    
         //print concept
         cout << ' ' << setw(10) << left << pStudent->StudentID << " | ";
         s = pStudent->LastName + " " + pStudent->FirstName;
