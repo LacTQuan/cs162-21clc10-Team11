@@ -202,7 +202,7 @@ void Create_Account_For_new_Student(string student_id) {
     else cur->next = newAcc;
 }
 void Create_Course(Semester* sem) { 
-    cout << setfill('_') << setw(127) << '\n';
+    cout << setfill('_') << setw(127) << left << "_" << endl;
     cout << setfill(' ') << setw(9) << left << " ID" << " | ";
     cout << setw(7) << left << "Credits" << " | ";
     cout << setw(8) << left << "Capacity" << " | ";
@@ -274,7 +274,7 @@ void Create_Course(Semester* sem) {
 
 void Print_Course(Semester* sem) {
     Course* pCourse = sem->pCourse;
-    cout << setfill('_') << setw(127) << '\n';
+    cout << setfill('_') << setw(127) << "\n";
     cout << setfill(' ') << setw(9) << left << " ID" << " | ";
     cout << setw(7) << left << "Credits" << " | ";
     cout << setw(8) << left << "Capacity" << " | ";
@@ -1195,9 +1195,9 @@ void Import_Scoreboard(Year* year, Course* cour) {
     fin.close();
 }
 void View_Score_Board(Course *cour) {
-    cout << "__________________________________________________________________________________\n";
-    cout << " Student ID |             Full name             | Midterm | Final | Other | Total \n";
-    cout << "____________|___________________________________|_________|_______|_______|_______\n";
+    cout << "___________________________________________________________________________________\n";
+    cout << " Student ID |             Full name              | Midterm | Final | Other | Total \n";
+    cout << "____________|____________________________________|_________|_______|_______|_______\n";
     Student_Course* pCurStd = cour->pStudent_Course;
     string s = "";
     while (pCurStd != nullptr) {
@@ -1210,6 +1210,7 @@ void View_Score_Board(Course *cour) {
         cout << setw(5) << right << pCurStd->mark.Total << '\n';
         pCurStd = pCurStd->pNext_Student_Course;
     }
+    cout << "____________|____________________________________|_________|_______|_______|_______\n";
 }
 // mark main & scoreboard in a course main
 void Create_mark_main(Year* year,Semester* sem){
