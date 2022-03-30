@@ -1023,51 +1023,102 @@ Class* find_class_in_many_classes(Year* year, string class_name){
     }
     return NULL;
 }
-void View_Class_Scoreboard(Class* class_name, Course* course){
-    cout << "Student ID\tFull Name\t   Midterm Mark\tFinal Mark\tOther Marks\tTotal mark" << endl;
-    Student_Course* pStu_Cour = course->pStudent_Course;
-    Cur_Course* pCur_Cour = new Cur_Course;
-    Student* pStu = class_name->pStudent;
-    if(pStu->pCur_Cour != NULL){
-            pCur_Cour = pStu->pCur_Cour;  // copy pCur_Cour = pStudent->pCur_Cour
+/*void View_Class_Scoreboard(Class* classes){
+    if (classes->pStudent == NULL){
+        cout << "No student is in this class!" << endl;
+        return;
+    }
+    Student* pStudent = classes->pStudent;
+    if (pStudent != NULL){
+        Cur_Course* pCur_Cour = new Cur_Course;
+        if (pStudent->pCur_Cour != NULL){
+            pCur_Cour = pStudent->pCur_Cour;
+            if (pCur_Cour != NULL){
+                cout<<pCur_Cour->Course_Name << "\t";
+                cout<<"StudentID\tStudent's name\t";
+            }   
+        }
+        cout<<endl;
+        cout << pStudent->StudentID << "\t" << pStudent->LastName + " " + pStudent->FirstName << "\t";
+        if (pStudent->pCur_Cour != NULL){
+            pCur_Cour = pStudent->pCur_Cour;  // copy pCur_Cour = pStudent->pCur_Cour
             double GPA_this_semester = 0;
             int count = 0;
             if (pCur_Cour != NULL){
-                double a, b, c;
+                // calculate
+                double a,b,c;
                 a = pCur_Cour->mark.Midterm;
                 b = pCur_Cour->mark.Final;
                 c = pCur_Cour->mark.Other;
                 GPA_this_semester += ((a + b* 2)/3 + c);
-                count++;        
-                cout << pCur_Cour->mark.Final<<"\t";
+                // courses's quantity
+                count++;
+                // print each course's score          
+                cout<<pCur_Cour->mark.Final<<"\t";
             }
             GPA_this_semester = int(GPA_this_semester* 10)/10.0;
-            cout << GPA_this_semester << "\t" << pStu->GPA << endl;
+            cout<<GPA_this_semester<<"\t"<<pStudent->GPA<<endl;
         }
-    pStu = pStu->pNext_Student;
-    cout << endl << endl;
-    while (pStu_Cour != NULL){
-        cout << pStu_Cour->StudentID << "\t" << pStu_Cour->FirstName + " " + pStu_Cour->LastName
-        << "\t" << pStu_Cour->mark.Midterm << "\t   " << pStu_Cour->mark.Final << "\t   " << pStu_Cour->mark.Other << pStu_Cour->mark.Total << endl;
-        pStu_Cour = pStu_Cour->pNext_Student_Course;
+        pStudent = pStudent->pNext_Student;
+        cout<<endl<<endl;
     }
+}*/
+
+void View_Class_Scoreboard(Class* classes){
+    if (classes->pStudent == NULL){
+        cout << "There's no student in the class!" << endl;
+        cin.ignore();
+        getchar();
+        return;
+    }
+    Student* pStu = classes->pStudent;
+    Cur_Course* pCur_Cour = new Cur_Course;
+    while (pStu != NULL){
+        if (pStu->pCur_Cour != NULL){
+            pCur_Cour = pStu->pCur_Cour;
+            if (pCur_Cour != NULL){
+                cout << pCur_Cour->Course_Name << " " << "Student ID Student's name ";
+                cout << endl;
+                cout << "\t" << pStu->StudentID << " " << pStu->LastName + " " + pStu->FirstName << " ";
+                if (pStu->pCur_Cour != NULL){
+                    pCur_Cour = pStu->pCur_Cour;
+                    double sem_GPA = 0;
+                    int count = 0;
+                    if (pCur_Cour != NULL){
+                        double a, b, c;
+                        a = pCur_Cour->mark.Midterm;
+                        b = pCur_Cour->mark.Final;
+                        c = pCur_Cour->mark.Other;
+                        sem_GPA += ((a + b * 2) / 3 + c);
+                        count++;
+                        cout << pCur_Cour->mark.Final << " ";
+                    }
+                    sem_GPA = int(sem_GPA* 10) / 10.0;
+                    cout << sem_GPA << " " << pStu << endl;
+                }
+            }
+        }
+        pStu = pStu->pNext_Student;
+        cout << endl;
+        cin.ignore();
+        getchar();
+        return;
+    }
+
 }
 void View_Class_Scoreboard_main(Year*& year, Semester*& semester){
     string class_name;
     cout << "Class you want to view scoreboard: ";
     cin >> class_name;
-    string course_name;
-    cout << "Course you want to view: ";
-    cin >> course_name;
     Class* class_check = find_class_in_many_classes(year, class_name);
-    Course* course_check = find_course_in_many_subjects(semester, course_name);
+    //Course* course_check = find_course_in_many_subjects(semester, course_name);
     if (class_check != find_class_in_many_classes(year, class_name)){
         cout << "Class name not found!" << endl;
         cin.ignore();
         getchar();
         return;
     }
-    View_Class_Scoreboard(class_check, course_check);
+    View_Class_Scoreboard(class_check);
     cin.ignore();
     getchar();
 }
