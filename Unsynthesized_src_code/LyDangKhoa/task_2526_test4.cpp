@@ -739,7 +739,7 @@ void Enroll_Course(Course* &course_regis, Student* &student){
     
     }else {
         if(Check_Cur_Course(course_regis,student) == false){
-            cout<<"This course has been registering\n";
+            cout<<"This course has been registered\n";
             cin.ignore();
             getchar();
         }else if (Check_quantity(student) == false){
@@ -776,8 +776,13 @@ void enroll_main(Year* &year, Semester* &semester){
         getchar();
         return;
     }
-
-    Enroll_Course(course_regis,student);
+    else{
+            Enroll_Course(course_regis,student);
+            cout << "You successfully enrolled the course\n";
+            cin.ignore();
+            getchar();
+            return;
+        }
 }
 
 void View_Enrolled_Course(Student* student) {
@@ -846,9 +851,13 @@ void View_Enrolled_Course_main(Year*& year, Semester*& semester) {
         getchar();
         return;
     }
-    View_Enrolled_Course(student);
-    cin.ignore();
-    getchar();
+    else{   
+        View_Enrolled_Course(student);
+        cout << "You successfully viewd the list of enrolled courses!";
+        cin.ignore();
+        getchar();
+        return;
+    }
 }
 void Delete_Enrolled_Course_main(Year*& year, Semester*& semester) {
     string studentID;
@@ -873,7 +882,13 @@ void Delete_Enrolled_Course_main(Year*& year, Semester*& semester) {
         getchar();
         return;
     }
-    Delete_Enrolled_Course(student, Del_Cour);
+    else{
+        Delete_Enrolled_Course(student, Del_Cour);
+        cout << "You successfully deleted the course!";
+        cin.ignore();
+        getchar();
+        return;
+    }
 }
 double rand_mark() {
     //srand(time(NULL));
@@ -968,8 +983,14 @@ void Create_mark_main(Year* year,Semester* sem){
         //getchar();
         return;                                      
     }
-    Create_Mark(course_regis);
-    Import_Scoreboard(year, course_regis);
+    else{
+        Create_Mark(course_regis);
+        Import_Scoreboard(year, course_regis);
+        cout << "You successfully created student's marks!";
+        cin.ignore();
+        getchar();
+        return;
+    }
 }
 //23
 void View_scoreboard_main(Semester* sem){
@@ -983,7 +1004,13 @@ void View_scoreboard_main(Semester* sem){
         return;                                      
     }
     system("cls");
-    View_Score_Board(course_regis);
+    else{
+        View_Score_Board(course_regis);
+        cout << "You successfully viewed the scoreboard!";
+        cin.ignore();
+        getchar();
+        return;
+    }
 }
 void Export_Course(Course* course) {
     Student_Course* stu_cour = course->pStudent_Course;
@@ -1011,7 +1038,13 @@ void Export_Course_main(Year*& year, Semester*& semester) {
         getchar();
         return;
     }
-    Export_Course(export_course);
+    else{
+        Export_Course(export_course);
+        cout << "You successfully exported the course to a CSV file!";
+        cin.ignore();
+        getchar();
+        return;
+    }
 }
 Class* find_class_in_many_classes(Year* year, string class_name){
     if (year->pClass == NULL) return NULL;
@@ -1066,30 +1099,34 @@ Class* find_class_in_many_classes(Year* year, string class_name){
 
 void View_Class_Scoreboard(Class* classes){
      if (classes->pStudent == NULL){
-        cout << "No student is in this class!" << endl;
+        cout << "No student is added in the class!" << endl;
         return;
-    }
+    }   
+    cout<<"___________________________________________________________________\n";
+    cout<<" Student ID |             Full name              |      Marks      \n";
+    cout<<"____________|____________________________________|_________________\n";
     Student* pStudent = classes->pStudent;
     string s = "";
-    // print title
-    cout << "\t" << "________________________________________________\n";
-    cout << "\t" << " Student ID |             Full name             \n";
-    cout << "\t" << "____________|___________________________________\n";
-    while (pStudent != NULL){                                                       
-        Cur_Course* pCur_Cour;
+    
+    while (pStudent != NULL){
+        cout << "            |                                    |";
+        // print title
+        Cur_Course* pCur_Cour = new Cur_Course;
         if(pStudent->pCur_Cour != NULL){
             pCur_Cour = pStudent->pCur_Cour;
             while(pCur_Cour != NULL){
-                cout << "--------" << endl;
-                cout << "|" <<pCur_Cour->Course_Name << "|" << endl;
+                cout<< setw(11) << left << pCur_Cour->Course_Name;
                 pCur_Cour = pCur_Cour->pNext_Cur_Cour;
-                cout << "--------";
+                if (pCur_Cour != NULL)
+                    cout << " | ";
             }  
         }
+        cout << '\n';
+    
         //print concept
+        cout << ' ' << setw(10) << left << pStudent->StudentID << " | ";
         s = pStudent->LastName + " " + pStudent->FirstName;
-        cout << " " << setw(10) << left << "\t" << pStudent->StudentID << " | ";
-        cout << setw(34) << left << "\t" << s << "\t";
+        cout << setw(34) << left << s << " | ";
 
         if(pStudent->pCur_Cour != NULL){
             pCur_Cour = pStudent->pCur_Cour;  // copy pCur_Cour = pStudent->pCur_Cour
@@ -1105,14 +1142,14 @@ void View_Class_Scoreboard(Class* classes){
                 // courses's quantity
                 count++;
                 // print each course's score          
-                cout << "\t" << pCur_Cour->mark.Final << "\t";
+                cout<< setw(11) << right << pCur_Cour->mark.Final<<" | ";
                 pCur_Cour = pCur_Cour->pNext_Cur_Cour;
             }
-            GPA_this_semester = int(GPA_this_semester* 10)/10.0;
-            cout << "\t" << GPA_this_semester << "\t" << pStudent->GPA << endl;
+            GPA_this_semester = int((GPA_this_semester / count)* 10)/10.0;
+            cout << GPA_this_semester << " | " << pStudent->GPA << endl;
         }
         pStudent = pStudent->pNext_Student;
-        cout << endl << endl;
+        cout<<endl;
     }
 }
 void View_Class_Scoreboard_main(Year*& year, Semester*& semester){
@@ -1127,9 +1164,12 @@ void View_Class_Scoreboard_main(Year*& year, Semester*& semester){
         getchar();
         return;
     }
-    View_Class_Scoreboard(class_check);
-    cin.ignore();
-    getchar();
+    else{
+        View_Class_Scoreboard(class_check);
+        cout << "You successfully viewed the class's scoreboard!";
+        cin.ignore();
+        getchar();
+        return;
 }
 //old version
 /*void Student_View_Scoreboard(Student* student, Course* course){
@@ -1190,9 +1230,13 @@ void Student_View_Scoreboard_main(Year*& year, Semester*& semester) {
         getchar();
         return;
     }
-    Student_View_Scoreboard(student);
-    cin.ignore();
-    getchar();
+    else{
+        Student_View_Scoreboard(student);
+        cout << "You successfully viewed your scoreboard!";
+        cin.ignore();
+        getchar();
+        return;
+    }
 }
 void Interface(Year*& year) {
     int choose_1;
