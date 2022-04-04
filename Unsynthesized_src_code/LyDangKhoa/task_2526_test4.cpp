@@ -996,7 +996,7 @@ void Create_mark_main(Year* year,Semester* sem){
 void View_scoreboard_main(Semester* sem){
     string course_name;
     cout<<"Course you want to choose "; cin>>course_name;
-    Course* course_regis = find_course_in_many_subjects(sem,course_name);
+    Course* course_regis = find_course_in_many_subjects(sem, course_name);
     if(course_regis == NULL){
         cout<<"invalid course_register"<<endl;
         //cin.ignore();
@@ -1004,13 +1004,11 @@ void View_scoreboard_main(Semester* sem){
         return;                                      
     }
     system("cls");
-    else{
         View_Score_Board(course_regis);
         cout << "You successfully viewed the scoreboard!";
         cin.ignore();
         getchar();
         return;
-    }
 }
 void Export_Course(Course* course) {
     Student_Course* stu_cour = course->pStudent_Course;
@@ -1098,38 +1096,38 @@ Class* find_class_in_many_classes(Year* year, string class_name){
 }*/
 
 void View_Class_Scoreboard(Class* classes){
-     if (classes->pStudent == NULL){
+    if (classes->pStudent == NULL){
         cout << "No student is added in the class!" << endl;
         return;
-    }   
-    cout<<"___________________________________________________________________\n";
-    cout<<" Student ID |             Full name              |      Marks      \n";
-    cout<<"____________|____________________________________|_________________\n";
-    Student* pStudent = classes->pStudent;
-    string s = "";
-    
-    while (pStudent != NULL){
-        cout << "            |                                    |";
+    }  
+    cout<<"___________________________________________________________________________________________________________________________\n";
+    cout<<" Student ID |             Full name              |      Marks                                                              \n";
+    cout<<"____________|____________________________________|_________________________________________________________________________\n";
+
+    Student* pCurStudent = classes->pStudent;
+    string s = ""; 
+    cout << setfill(' '); // lien
+    while (pCurStudent != NULL){
+        cout << "            |                                    | ";
         // print title
-        Cur_Course* pCur_Cour = new Cur_Course;
-        if(pStudent->pCur_Cour != NULL){
-            pCur_Cour = pStudent->pCur_Cour;
+        Cur_Course* pCur_Cour = NULL;
+        if(pCurStudent->pCur_Cour != NULL){
+            pCur_Cour = pCurStudent->pCur_Cour;
             while(pCur_Cour != NULL){
-                cout<< setw(11) << left << pCur_Cour->Course_Name;
+                cout<< setw(8) << left << pCur_Cour->Course_Name << " | ";
                 pCur_Cour = pCur_Cour->pNext_Cur_Cour;
-                if (pCur_Cour != NULL)
-                    cout << " | ";
-            }  
+            }
         }
-        cout << '\n';
+        cout << setw(8) << left << "Sem GPA" << " | ";
+        cout << setw(12) << left << "Overall GPA" << "\n";
     
         //print concept
-        cout << ' ' << setw(10) << left << pStudent->StudentID << " | ";
-        s = pStudent->LastName + " " + pStudent->FirstName;
+        cout << ' ' << setw(10) << left << pCurStudent->StudentID << " | ";
+        s = pCurStudent->LastName + " " + pCurStudent->FirstName;
         cout << setw(34) << left << s << " | ";
 
-        if(pStudent->pCur_Cour != NULL){
-            pCur_Cour = pStudent->pCur_Cour;  // copy pCur_Cour = pStudent->pCur_Cour
+        if (pCurStudent->pCur_Cour != NULL){
+            pCur_Cour = pCurStudent->pCur_Cour;  // copy pCur_Cour = pCurStudent->pCur_Cour
             double GPA_this_semester = 0;
             int count = 0;
             while(pCur_Cour != NULL){
@@ -1142,14 +1140,22 @@ void View_Class_Scoreboard(Class* classes){
                 // courses's quantity
                 count++;
                 // print each course's score          
-                cout<< setw(11) << right << pCur_Cour->mark.Final<<" | ";
+                cout << setw(5) << right << pCur_Cour->mark.Final << "    | ";
                 pCur_Cour = pCur_Cour->pNext_Cur_Cour;
             }
-            GPA_this_semester = int((GPA_this_semester / count)* 10)/10.0;
-            cout << GPA_this_semester << " | " << pStudent->GPA << endl;
+            GPA_this_semester = int((GPA_this_semester / count )* 10)/10.0;
+            //Textcolor(SUCCESS);
+            cout << setw(5) << right << GPA_this_semester;
+            //Textcolor(NORMAL);
+            cout << "    | ";
+            //Textcolor(SUCCESS);
+            cout << setw(7) << right << pCurStudent->GPA << endl;
+            //Textcolor(NORMAL);
         }
-        pStudent = pStudent->pNext_Student;
-        cout<<endl;
+        else{
+            cout << "\n";
+        }
+        pCurStudent = pCurStudent->pNext_Student;
     }
 }
 void View_Class_Scoreboard_main(Year*& year, Semester*& semester){
@@ -1170,6 +1176,7 @@ void View_Class_Scoreboard_main(Year*& year, Semester*& semester){
         cin.ignore();
         getchar();
         return;
+    }
 }
 //old version
 /*void Student_View_Scoreboard(Student* student, Course* course){
@@ -1205,19 +1212,26 @@ void Student_View_Scoreboard_main(Year*& year, Semester*& semester) {
     getchar();
 }*/
 void Student_View_Scoreboard(Student* student){
+    cout << "Your scoreboard:\n";
     if(student->pCur_Cour == NULL){
-        cout << "The staff haven't inputted your scores yet!\n";
+        cout << "No course is enrolled.";
     }
-    Cur_Course* pView = student->pCur_Cour;
-    cout << setw(28) << left << "Course name" << " | Midterm | Final | Other | Total\n";
-    while(pView != NULL){
-        cout << setw(28) << left << pView->Course_Name << " | ";
-        cout << setw(7)  << right << pView->mark.Midterm << " | ";
-        cout << setw(5)  << right << pView->mark.Final << " | ";
-        cout << setw(5)  << right << pView->mark.Other << " | ";
-        cout << setw(5)  << right << pView->mark.Total << "\n";
-        pView = pView->pNext_Cur_Cour;
-    } 
+    else{
+        Cur_Course* pCur = student->pCur_Cour;
+        cout << "________________________________________________________\n";
+        cout << "     Course name      | Midterm | Final | Other | Total \n";
+        cout << "______________________|_________|_______|_______|_______\n";
+        cout << setfill(' '); // lien
+        while(pCur != NULL){
+            cout << ' ' << setw(20) << left << pCur->Course_Name << " | ";
+            cout << setw(7)  << right << pCur->mark.Midterm << " | ";
+            cout << setw(5)  << right << pCur->mark.Final << " | ";
+            cout << setw(5)  << right << pCur->mark.Other << " | ";
+            cout << setw(5)  << right << pCur->mark.Total << "\n";
+            pCur = pCur->pNext_Cur_Cour;
+            cout << "______________________|_________|_______|_______|_______\n";// lien
+        }    
+    }
 }
 void Student_View_Scoreboard_main(Year*& year, Semester*& semester) {
     string studentID;
