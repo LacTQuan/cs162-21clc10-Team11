@@ -1067,7 +1067,7 @@ Semester* Import_Semester(Semester* sem){
     return pCur_sem;
 }
 
-void Create_Student(Class *&classes, Account* account_head){
+void Create_Student(Year* year, Class *&classes, Account* account_head){ 
 
     //No, StudentID, FirstName, LastName, Gender, Date_of_Birth, SocialID
     ifstream filein(classes->name+".csv");
@@ -1089,24 +1089,33 @@ void Create_Student(Class *&classes, Account* account_head){
 
     while(filein.eof() == false){
         pCur_Student = classes->pStudent;
-        Temp_Student = new Student;
-        
-        getline(filein,Temp_Student->No,',');           cout<< " " << setw(3) << left << Temp_Student->No << " | ";
-        getline(filein,Temp_Student->StudentID,',');    cout<< setw(10) << left << Temp_Student->StudentID << " | ";
-        getline(filein,Temp_Student->LastName,',');     cout<< setw(21) << left << Temp_Student->LastName << " | ";
-        getline(filein,Temp_Student->FirstName,',');    cout<< setw(9) << left << Temp_Student->FirstName << " | ";
-        getline(filein,Temp_Student->Gender,',');       cout<< setw(6) << left << Temp_Student->Gender << " | ";
-        getline(filein,Temp_Student->Date_of_Birth,',');cout<< setw(13) << left << Temp_Student->Date_of_Birth << " | ";
-        getline(filein,Temp_Student->SocialID,'\n');    cout<< setw(12) << right << Temp_Student->SocialID << " \n";
-        // cout << "_____|____________|_______________________|___________|________|_______________|______________\n";  
-        Temp_Student->pNext_Student = NULL;
-        Temp_Student->pCur_Cour = NULL;
-        Create_Account_For_new_Student(Temp_Student->StudentID, account_head);
+        string No, id;
+        getline(filein, No, ',');
+        getline(filein, id, ',');
+        if (find_student_in_many_classes(year, id)==nullptr) {
+            Temp_Student = new Student;
+            
+            Temp_Student->No = No;
+            Temp_Student->StudentID = id;                   cout<< setw(10) << left << Temp_Student->StudentID << " | ";
+            getline(filein,Temp_Student->LastName,',');     cout<< setw(21) << left << Temp_Student->LastName << " | ";
+            getline(filein,Temp_Student->FirstName,',');    cout<< setw(9) << left << Temp_Student->FirstName << " | ";
+            getline(filein,Temp_Student->Gender,',');       cout<< setw(6) << left << Temp_Student->Gender << " | ";
+            getline(filein,Temp_Student->Date_of_Birth,',');cout<< setw(13) << left << Temp_Student->Date_of_Birth << " | ";
+            getline(filein,Temp_Student->SocialID,'\n');    cout<< setw(12) << right << Temp_Student->SocialID << " \n";
 
-        if(classes->pStudent == NULL) classes->pStudent = Temp_Student;
-        else{
-            while(pCur_Student->pNext_Student != NULL) pCur_Student = pCur_Student->pNext_Student;
-            pCur_Student->pNext_Student = Temp_Student;
+            Temp_Student->pNext_Student = NULL;
+            Temp_Student->pCur_Cour = NULL;
+            Create_Account_For_new_Student(Temp_Student->StudentID, account_head);
+
+            if(classes->pStudent == NULL) classes->pStudent = Temp_Student;
+            else{
+                while(pCur_Student->pNext_Student != NULL) pCur_Student = pCur_Student->pNext_Student;
+                pCur_Student->pNext_Student = Temp_Student;
+            }
+        }
+        else {
+            cout<<id<<" already exits!\n";
+            getline(filein, No, '\n');
         }
     }
     
@@ -2429,7 +2438,7 @@ void STUDENT_PAGE(Year* &year,Class* &classes, Account* account_head, int locate
 				if (cell == 1) {
                     system("cls");
                     Print_Student(classes);
-                    Create_Student(classes, account_head);
+                    Create_Student(year, classes, account_head);
                     save_account_list(account_head); // save account
                     save_class_student_main(year);
                     cin.ignore(1000, '\n');
