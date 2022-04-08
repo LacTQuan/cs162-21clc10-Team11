@@ -2035,17 +2035,25 @@ void Staff_profile(Staff* &staff){
     filein.close();
 }
 void output_staff(Staff* staff, string username){
-    if(staff == NULL) return;
+    Textcolor(10);
+    gotoxy(55, 8); cout << setw(23) << right << "---PROFILE---\n\n";
+    Textcolor(NORMAL);
+    if(staff == NULL) {
+        gotoxy(55, 10);
+        cout << setw(20) << right << "No data.\n";
+        return;
+    }
     Staff* pCur = staff;
     while(pCur != NULL){
         if(username == pCur->Email){
-            cout<<"Email :"<<pCur->Email<<endl;
-            cout<<"Full name :"<<pCur->Full_name<<endl;
-            cout<<"Gender :"<<pCur->Gender<<endl;
-            cout<<"Date of Birth :"<<pCur->Birth_of_date<<endl;
-            cout<<"SocialID :"<<pCur->Social_ID;
+            gotoxy(55, 10); cout << setw(14) << left << "Email" << " : " << pCur->Email << endl;
+            gotoxy(55, 11); cout << setw(14) << left << "Full name" << " : " << pCur->Full_name << endl;
+            gotoxy(55, 12); cout << setw(14) << left << "Gender" << " : " << pCur->Gender << endl;
+            gotoxy(55, 13); cout << setw(14) << left << "Date of Birth" << " : " << pCur->Birth_of_date << endl;
+            gotoxy(55, 14); cout << setw(14) << left << "Social ID" << " : " << pCur->Social_ID;
             break;
-        }else pCur = pCur->pNext_Staff;
+        }
+        else pCur = pCur->pNext_Staff;
     }
 }
 //No, StudentID, Fullname, Gender, Date_of_Birth, SocialID
