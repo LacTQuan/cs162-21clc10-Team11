@@ -1095,7 +1095,7 @@ void Create_Student(Year* year, Class *&classes, Account* account_head){
         if (find_student_in_many_classes(year, id)==nullptr) {
             Temp_Student = new Student;
             
-            Temp_Student->No = No;
+            Temp_Student->No = No;                          cout<< setw(4) << left <<Temp_Student->No << " | ";
             Temp_Student->StudentID = id;                   cout<< setw(10) << left << Temp_Student->StudentID << " | ";
             getline(filein,Temp_Student->LastName,',');     cout<< setw(21) << left << Temp_Student->LastName << " | ";
             getline(filein,Temp_Student->FirstName,',');    cout<< setw(9) << left << Temp_Student->FirstName << " | ";
