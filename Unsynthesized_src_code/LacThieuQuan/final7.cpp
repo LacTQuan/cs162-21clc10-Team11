@@ -2058,14 +2058,22 @@ void output_staff(Staff* staff, string username){
 }
 //No, StudentID, Fullname, Gender, Date_of_Birth, SocialID
 void Student_profile(Year* year,string username){
+    Textcolor(10);
+    gotoxy(55, 8); cout << setw(23) << right << "---PROFILE---\n\n";
+    Textcolor(NORMAL);
+    
     Student* student = find_student_in_many_classes(year, username);
-    if(student == NULL) return;
-    cout<<"No :"<<student->No<<endl;
-    cout<<"StudentID :"<<student->No<<endl;
-    cout<<"Full name :"<<student->LastName + student->FirstName<<endl;
-    cout<<"Gender :"<<student->Gender<<endl;
-    cout<<"Date of Birth :"<<student->Date_of_Birth<<endl;
-    cout<<"SocialID :"<<student->SocialID;
+    if(student == NULL){
+        gotoxy(55, 10);
+        cout << setw(20) << right << "No data.\n";
+        return;
+    }
+    gotoxy(55, 10); cout << setw(14) << left << "No" << " : " << student->No << endl;
+    gotoxy(55, 11); cout << setw(14) << left << "Student ID" << " : "<< student->No << endl;
+    gotoxy(55, 12); cout << setw(14) << left << "Full name" << " : " << student->LastName << " " << student->FirstName << endl;
+    gotoxy(55, 13); cout << setw(14) << left << "Gender" << " : " << student->Gender << endl;
+    gotoxy(55, 14); cout << setw(14) << left << "Date of Birth" << " : " << student->Date_of_Birth << endl;
+    gotoxy(55, 15); cout << setw(14) << left << "SocialID" << " : " << student->SocialID;
 }
 
 //logo portal
