@@ -28,46 +28,46 @@ struct Cur_Course{ //new
     string CourseID, Course_Name, Teacher_Name, Number_of_Credits, Max_Student, Day1, Session1, Day2, Session2;
     string Start_Day, End_Day;
     Mark mark;      
-    Cur_Course* pNext_Cur_Cour;
+    Cur_Course* pNext_Cur_Cour = nullptr;
     //Temp_Course* pTemp_Cour;
 };
 struct Student{
     //No, StudentID, FirstName, LastName, Gender, Date_of_Birth, SocialID
     string No, StudentID, FirstName, LastName, Gender, Date_of_Birth, SocialID;
     double GPA = 0;  // new
-    Student* pNext_Student;
-    Cur_Course* pCur_Cour;
+    Student* pNext_Student = nullptr;
+    Cur_Course* pCur_Cour = nullptr;
 };
 struct Class{
     string name;
-    Student* pStudent;
-    Class* pNext_Class;
+    Student* pStudent = nullptr;
+    Class* pNext_Class = nullptr;
 };
 //left
 struct Student_Course{
     string No, StudentID, FirstName, LastName, Gender, Date_of_Birth, SocialID;
     Mark mark;
-    Student_Course* pNext_Student_Course;
+    Student_Course* pNext_Student_Course = nullptr;
 };
 struct Course{
     //Course id, Course name, teacher name, number of credits, 
     //the maximum number of students (default 50), day, and the session
     string CourseID, Course_Name, Teacher_Name, Number_of_Credits, Max_Student, Day1, Session1, Day2, Session2;
     string Start_Day, End_Day;
-    Course* pNext_Course;
-    Student_Course* pStudent_Course;
+    Course* pNext_Course = nullptr;
+    Student_Course* pStudent_Course = nullptr;
 };
 struct Semester{
     string name;
-    Semester* pNext_Semester;
-    Course* pCourse;
+    Semester* pNext_Semester = nullptr;
+    Course* pCourse = nullptr;
 };
 //main
 struct Year{
     string name;
-    Class* pClass;
-    Year* pNext_Year;
-    Semester* pSemester;
+    Class* pClass = nullptr;
+    Year* pNext_Year = nullptr;
+    Semester* pSemester = nullptr;
 };
 // Time
 struct Time{
@@ -79,7 +79,7 @@ struct Registration_Session{
 };
 struct Account{
     string username, password;
-    Account *next;
+    Account *next = nullptr;
 };
 struct User{ // new
 // hold current user
@@ -93,7 +93,7 @@ struct Staff{
     string Gender;
     string Birth_of_date;
     string Social_ID;
-    Staff* pNext_Staff;
+    Staff* pNext_Staff = nullptr;
 };
 void Nocursortype(){
 	CONSOLE_CURSOR_INFO Info;
@@ -231,17 +231,20 @@ void calcu_oGPA(Year* year, Student* student) {
     if(cnt) total = total*1.0/cnt; 
     if (ammout_sem>1) student->GPA = 1.0*((student->GPA)*(ammout_sem-1)+total)/ammout_sem;
     else student->GPA=total;
+    student->GPA=int(student->GPA*10)/10.0;
 }
 void calcu_oGPA_main(Year* year) {
-    while (year->pNext_Year) year=year->pNext_Year;
-    Class* _class = year->pClass;
-    while (_class) {
-        Student* st = _class->pStudent;
-        while (st) {
-            calcu_oGPA(year, st);
-            st = st->pNext_Student;
+    while (year) {
+        Class* _class = year->pClass;
+        while (_class) {
+            Student* st = _class->pStudent;
+            while (st) {
+                calcu_oGPA(year, st);
+                st = st->pNext_Student;
+            }
+            _class = _class->pNext_Class;
         }
-        _class = _class->pNext_Class;
+        year=year->pNext_Year;
     }
 }
 // create account
@@ -595,7 +598,8 @@ void Update_Course(Semester* sem){
         cout << "Maximum number of students in Course: ";
         cin >> cour->Max_Student;
         cout << "Course name: ";
-        cin >> cour->Course_Name;
+        cin.ignore(1000, '\n');
+        getline(cin, cour->Course_Name, '\n');
         cout << "Teacher name: ";
         cin.ignore(1000, '\n');
         getline(cin, cour->Teacher_Name, '\n');
@@ -758,7 +762,6 @@ void View_Student_In_Course(Semester* sem){
     string inCourse;
     Course* pCurCourse; 
     // bool courseExists()
-    system("cls");
     cout << "Enter course ID to view its students: ";
     cin >> inCourse;
     pCurCourse = sem->pCourse;
@@ -1095,6 +1098,7 @@ void Create_Student(Year* year, Class *&classes, Account* account_head){
     while(filein.eof() == false){
         pCur_Student = classes->pStudent;
         string No, id;
+        cin.ignore(1000, '\n');
         getline(filein, No, ',');
         getline(filein, id, ',');
         cout << setfill(' ');
@@ -2215,6 +2219,7 @@ void COURSE_PAGE(Year* &year,Semester* &sem,int locate_x, int locate_y, int numb
                     }
                     else{
                         Delete_Course(sem);
+                        save_course_main(year);
                         cin.ignore(1000, '\n');
                         getchar();
                     }
@@ -2267,6 +2272,7 @@ void COURSE_PAGE(Year* &year,Semester* &sem,int locate_x, int locate_y, int numb
                         cout << "You need to create a course to update its scoreboard.\n";
                     else{
                         update_student_result(year,sem);
+                        calcu_oGPA_main(year);
                     }
                     cin.ignore(1000, '\n');
                     getchar();
@@ -2352,13 +2358,13 @@ void SEMESTER_PAGE(Year* &year,int locate_x, int locate_y, int number_of_cells, 
 				if (cell == 1) {
                     system("cls");
                     Print_Semester(year);
-                    del_cur_course_last_sem(year);
                     Create_Semester(year);
                     if (year->pSemester->pNext_Semester) {
                         calcu_oGPA_main(year);
                         save_class_student_main(year);
                     }
                     save_year_semester(year);
+                    del_cur_course_last_sem(year);
                 }else if (cell == 2){
                     system("cls");
                     Print_Semester(year);
