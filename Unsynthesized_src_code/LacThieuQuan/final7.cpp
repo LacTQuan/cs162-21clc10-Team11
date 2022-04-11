@@ -1610,7 +1610,10 @@ void View_Class_Scoreboard_main(Class* classes){
             Textcolor(NORMAL);
         }
         else{
-            cout << "\n";
+            cout << "         |";
+            Textcolor(SUCCESS);
+            cout<<setw(7)<<right<<pCurStudent->GPA<<endl;
+            Textcolor(NORMAL);
         }
         pCurStudent = pCurStudent->pNext_Student;
     }
