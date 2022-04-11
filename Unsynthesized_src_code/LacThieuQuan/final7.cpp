@@ -1,11 +1,11 @@
-#include<iostream>
-#include<cstring>
+#include <iostream>
+#include <cstring>
 #include <iomanip>
 #include <fstream>
 #include <cstdlib>
 #include <algorithm>
-#include<cmath>
-#include<string.h>
+#include <cmath>
+#include <string.h>
 #include <conio.h>
 #include <Windows.h>
 #include <string>
@@ -75,7 +75,7 @@ struct Time{
 };
 struct Registration_Session{
     Time start = {20,3,2022,0,0};
-    Time end = {30,3,2022,0,0};
+    Time end = {30,4,2022,0,0};
 };
 struct Account{
     string username, password;
@@ -264,7 +264,7 @@ void Create_Account_For_new_Student(string student_id, Account* account_head) {
 void Create_Course(Year* year, Semester* sem) { 
     ifstream filein(year->name + "_" + sem->name + ".csv");
     if (!filein){
-        cout << "Cannot open file.\n";
+        cout << "Cannot open file \"" << year->name << "_" << sem->name + "\".csv\".\n";
         return;
     }
 
@@ -347,8 +347,8 @@ void Create_Course(Year* year, Semester* sem) {
     filein.close();
 }
 
-void Print_Course(Semester* sem) {
-    cout << "List of courses of semester " << sem->name << ":\n";  
+void Print_Course(Year* year, Semester* sem) {
+    cout << "List of courses of the school year " << year->name << " - semester " << sem->name << ":\n";  
 
     if (sem->pCourse == nullptr){
         cout << "\tNo course was added.\n";
@@ -408,14 +408,14 @@ void Print_Course(Semester* sem) {
         }
     }
 }
-Course* find_Course(Course* pCourse, string name) { // find with course id instead of course name
+Course* find_Course(Course* pCourse, string name) { 
     if (!pCourse) return nullptr;
     if (pCourse->CourseID == name) return pCourse;
     while (pCourse->pNext_Course && pCourse->pNext_Course->CourseID != name)
         pCourse = pCourse->pNext_Course;
     if(pCourse->pNext_Course && pCourse->pNext_Course->CourseID == name)
-        return pCourse;
-    else   
+        return pCourse->pNext_Course;
+    else
         return nullptr;
 }
 // find student
@@ -601,7 +601,6 @@ void Update_Course(Semester* sem){
         cin.ignore(1000, '\n');
         getline(cin, cour->Course_Name, '\n');
         cout << "Teacher name: ";
-        cin.ignore(1000, '\n');
         getline(cin, cour->Teacher_Name, '\n');
         cout << "Time performing: " << endl;
         cout << "\tDay of week: MON TUE WED THU FRI SAT\n";
@@ -700,9 +699,9 @@ void Print_Semester(Year* year) {
 }
 void Print_Cur_Course(Cur_Course* cur_course) {
     if (cur_course == nullptr)
-        cout << "No course to display" << endl;
+        cout << "No course to display" << endl; 
     else {
-        cout << setfill('_') << setw(127) << '\n';
+        cout << setfill('_') << setw(147) << '\n';
         cout << setfill(' ') << setw(10) << left << " ID" << " | ";
         cout << setw(7) << left << "Credits" << " | ";
         cout << setw(8) << left << "Capacity" << " | ";
@@ -712,7 +711,7 @@ void Print_Cur_Course(Cur_Course* cur_course) {
         cout << setw(9) << left << "Start day" << " | ";
         cout << setw(8) << left << "End day" << '\n';
         
-        cout << setfill('_') << setw(12) << right << "|";
+        cout << setfill('_') << setw(13) << right << "|";
         cout << setw(10) << right << "|";
         cout << setw(11) << right << "|";
         cout << setw(43) << right << "|";
@@ -732,7 +731,8 @@ void Print_Cur_Course(Cur_Course* cur_course) {
             cout << setw(15) << left << s << " | ";
             cout << setw(9) << left << cur_course->Start_Day << " | ";
             cout << setw(8) << left << cur_course->End_Day << '\n';
-            cout << setw(12) << right << "|";
+
+            cout << setw(13) << right << "|";
             cout << setw(10) << right << "|";
             cout << setw(11) << right << "|";
             cout << setw(43) << right << "|";
@@ -745,7 +745,7 @@ void Print_Cur_Course(Cur_Course* cur_course) {
             cur_course = cur_course->pNext_Cur_Cour;
         }  
         // End of table
-        cout << setfill('_') << setw(12) << right << "|";
+        cout << setfill('_') << setw(13) << right << "|";
         cout << setw(10) << right << "|";
         cout << setw(11) << right << "|";
         cout << setw(43) << right << "|";
@@ -802,7 +802,7 @@ void View_Student_In_Course(Semester* sem){
 void View_Enrolled_Course(Year* year, Student* student) {
     string id=student->StudentID;
     string s;
-    cout << setfill('_') << setw(127) << left << "_" << endl;
+    cout << setfill('_') << setw(147) << left << "_" << endl;
     cout << setfill(' ') << setw(10) << left << " ID" << " | ";
     cout << setw(7) << left << "Credits" << " | ";
     cout << setw(8) << left << "Capacity" << " | ";
@@ -812,7 +812,7 @@ void View_Enrolled_Course(Year* year, Student* student) {
     cout << setw(9) << left << "Start day" << " | ";
     cout << setw(8) << left << "End day" << '\n';
     
-    cout << setfill('_') << setw(11) << right << "|";
+    cout << setfill('_') << setw(12) << right << "|";
     cout << setw(10) << right << "|";
     cout << setw(11) << right << "|";
     cout << setw(43) << right << "|";
@@ -1091,6 +1091,7 @@ void Create_Student(Year* year, Class *&classes, Account* account_head){
     Textcolor(SUCCESS);
     cout << "Students added:\n";
     Textcolor(NORMAL);
+
     cout << "______________________________________________________________________________________________\n";
     cout << " No. | Student ID |       First name      | Last name | Gender | Date of Birth |   Social ID  \n";
     cout << "_____|____________|_______________________|___________|________|_______________|______________\n";
@@ -1098,7 +1099,6 @@ void Create_Student(Year* year, Class *&classes, Account* account_head){
     while(filein.eof() == false){
         pCur_Student = classes->pStudent;
         string No, id;
-        cin.ignore(1000, '\n');
         getline(filein, No, ',');
         getline(filein, id, ',');
         cout << setfill(' ');
@@ -1124,7 +1124,9 @@ void Create_Student(Year* year, Class *&classes, Account* account_head){
             }
         }
         else {
-            cout<<id<<" already exits!\n";
+            Textcolor(_ERROR);
+            cout << id <<" already exists!\n";
+            Textcolor(NORMAL);
             getline(filein, No, '\n');
         }
     }
@@ -1162,28 +1164,22 @@ void Add_1_Student_main(Year* year,Class *&classes, Account* account_head) {
     string student_id;
     Student* stu = nullptr;
     
-    bool exist = false;
-    do {
-        exist = false;  
-        cout<<"Enter the new student's ID: "; cin>>student_id;
-        stu = find_student_in_many_classes(year, student_id);
+    cout<<"Enter the new student's ID: "; cin>>student_id;
+    stu = find_student_in_many_classes(year, student_id);
 
-        if (stu != nullptr){
-            exist = true;
-            Textcolor(_ERROR);
-            cout << "ID already existed.\n";
-            Textcolor(NORMAL);
-            cin.ignore(1000, '\n');
-            getchar();
-        }
-    } while (exist);
-    
-    Add_1_Student(classes, student_id);
-    Textcolor(SUCCESS);  
-    cout<<"Added!"<<endl;
-    Textcolor(NORMAL);
+    if (stu != nullptr){
+        Textcolor(_ERROR);
+        cout << "ID already existed.\n";
+        Textcolor(NORMAL);
+    }
+    else{
+        Add_1_Student(classes, student_id);
+        Textcolor(SUCCESS);  
+        cout<<"Student added!"<<endl;
+        Textcolor(NORMAL);
 
-    Create_Account_For_new_Student(student_id, account_head);
+        Create_Account_For_new_Student(student_id, account_head);
+    }
 }
 
 //check enroll
@@ -1346,8 +1342,8 @@ void Assign_Mark(Year* year,string course_id, string Student_ID, double total, d
         pCur_Cour->mark.Total = total;
     }
 }
-void Create_Mark(Course* cour) {
-    string s = cour->CourseID + ".csv";
+void Create_Mark(Year* year, Semester* sem, Course* cour) {
+    string s =  year->name + "_" + sem->name + "_" + cour->CourseID + ".csv";
     ofstream fout(s);
     fout << "No,ID,Full name,Total mark,Final mark,Midterm mark,Other mark";
     Student_Course* Stu_Cour = cour->pStudent_Course;
@@ -1439,7 +1435,7 @@ void Create_mark_main(Year* year,Semester* sem){ // Import scoreboard
         Textcolor(NORMAL);
         return;                                      
     }
-    Create_Mark(course_regis);
+    Create_Mark(year, sem, course_regis);
     Import_Scoreboard(year, course_regis);
     Textcolor(SUCCESS);  
     cout << "Scoreboard imported.";
@@ -1465,7 +1461,7 @@ void Export_Course(Year* year, Semester* sem, Course* course) {
     ofstream fileout;
     int cnt = 1;
     string s = course->CourseID;
-    fileout.open(year->name + "_" + sem->name + "_" + s + ".csv");  // export course new name
+    fileout.open(year->name + "_HK" + sem->name + "_" + s + ".csv");  // export course new name
     fileout << "No" << "," << "ID" << "," << "Full name" << "," << "Total mark" << "," << "Final mark" << "," << "Midterm mark" << "," << "Other mark";
     while (stu_cour != nullptr) {
         fileout << endl;
@@ -1496,7 +1492,7 @@ void Export_Course_main(Year*& year, Semester*& semester) {
 //24
 void update_student_result(Year* &year, Semester* &sem){
     //view all course
-    //Print_Course(sem);
+    //Print_Course(year, sem);
     //find course
     string course_id;
     cout << "Enter course ID to update its scoreboard: "; cin >> course_id;
@@ -1571,11 +1567,12 @@ void View_Class_Scoreboard_main(Class* classes){
         if(pCurStudent->pCur_Cour != NULL){
             pCur_Cour = pCurStudent->pCur_Cour;
             while(pCur_Cour != NULL){
-                cout<< setw(8) << left << pCur_Cour->CourseID << " | ";
+                // print course id
+                cout<< setw(12) << left << pCur_Cour->CourseID << " | ";
                 pCur_Cour = pCur_Cour->pNext_Cur_Cour;
             }
         }
-        cout << setw(8) << left << "Sem GPA" << " | ";
+        cout << setw(12) << left << "Sem GPA" << " | ";
         cout << setw(12) << left << "Overall GPA" << "\n";
     
         //print concept
@@ -1583,10 +1580,10 @@ void View_Class_Scoreboard_main(Class* classes){
         s = pCurStudent->LastName + " " + pCurStudent->FirstName;
         cout << setw(34) << left << s << " | ";
 
+        double GPA_this_semester = 0;
+        int count = 0;
         if (pCurStudent->pCur_Cour != NULL){
             pCur_Cour = pCurStudent->pCur_Cour;  // copy pCur_Cour = pCurStudent->pCur_Cour
-            double GPA_this_semester = 0;
-            int count = 0;
             while(pCur_Cour != NULL){
                 // calculate
                 double a,b,c;
@@ -1597,22 +1594,28 @@ void View_Class_Scoreboard_main(Class* classes){
                 // courses's quantity
                 count++;
                 // print each course's score          
-                cout << setw(5) << right << pCur_Cour->mark.Final << "    | ";
+                Textcolor(15);
+                cout << setw(7) << right << pCur_Cour->mark.Final;
+                Textcolor(NORMAL);
+                cout << "      | ";
                 pCur_Cour = pCur_Cour->pNext_Cur_Cour;
             }
             GPA_this_semester = int((GPA_this_semester / count )* 10)/10.0;
             Textcolor(SUCCESS);
-            cout << setw(5) << right << GPA_this_semester;
+            cout << setw(7) << right << GPA_this_semester;
             Textcolor(NORMAL);
-            cout << "    | ";
+            cout << "      | ";
             Textcolor(SUCCESS);
             cout << setw(7) << right << pCurStudent->GPA << endl;
             Textcolor(NORMAL);
         }
         else{
-            cout << "         |";
             Textcolor(SUCCESS);
-            cout<<setw(7)<<right<<pCurStudent->GPA<<endl;
+            cout << setw(7) << right << GPA_this_semester;
+            Textcolor(NORMAL);
+            cout << "      | ";
+            Textcolor(SUCCESS);
+            cout << setw(7) << right << pCurStudent->GPA << endl;
             Textcolor(NORMAL);
         }
         pCurStudent = pCurStudent->pNext_Student;
@@ -2014,7 +2017,7 @@ void copy_file(Year* year1, Year* year2) {
     ifstream fin;
     fin.open(year1->name+"_class_student.csv", ios::binary);
     fin.seekg(0, ios::end);
-    int size=fin.tellg();
+    int size = fin.tellg();
     char* data = new char[size];
     fin.seekg(0, ios::beg);
     fin.read(data, size);
@@ -2023,7 +2026,7 @@ void copy_file(Year* year1, Year* year2) {
     fout.open(year2->name+"_class_student.csv", ios::binary);
     fout.write(data, size);
     fout.close();
-    delete[] data;
+    delete [] data;
 }
 void copy_class_student(Year* year1, Year* year2) {
     copy_file(year1, year2);
@@ -2057,21 +2060,21 @@ void Staff_profile(Staff* &staff){
 void output_staff(Staff* staff, string username){
     cout << setfill(' ');
     Textcolor(10);
-    gotoxy(55, 8); cout << setw(23) << right << "---PROFILE---\n\n";
+    gotoxy(52, 8); cout << setw(24) << right << "---PROFILE---";
     Textcolor(NORMAL);
     if(staff == NULL) {
-        gotoxy(55, 10);
+        gotoxy(52, 10);
         cout << setw(20) << right << "No data.\n";
         return;
     }
     Staff* pCur = staff;
     while(pCur != NULL){
         if(username == pCur->Email){
-            gotoxy(55, 10); cout << setw(14) << left << "Email" << " : " << pCur->Email << endl;
-            gotoxy(55, 11); cout << setw(14) << left << "Full name" << " : " << pCur->Full_name << endl;
-            gotoxy(55, 12); cout << setw(14) << left << "Gender" << " : " << pCur->Gender << endl;
-            gotoxy(55, 13); cout << setw(14) << left << "Date of Birth" << " : " << pCur->Birth_of_date << endl;
-            gotoxy(55, 14); cout << setw(14) << left << "Social ID" << " : " << pCur->Social_ID;
+            gotoxy(52, 10); cout << setw(14) << left << "Email" << " : " << pCur->Email << endl;
+            gotoxy(52, 11); cout << setw(14) << left << "Full name" << " : " << pCur->Full_name << endl;
+            gotoxy(52, 12); cout << setw(14) << left << "Gender" << " : " << pCur->Gender << endl;
+            gotoxy(52, 13); cout << setw(14) << left << "Date of Birth" << " : " << pCur->Birth_of_date << endl;
+            gotoxy(52, 14); cout << setw(14) << left << "Social ID" << " : " << pCur->Social_ID;
             break;
         }
         else pCur = pCur->pNext_Staff;
@@ -2081,7 +2084,7 @@ void output_staff(Staff* staff, string username){
 void Student_profile(Year* year,string username){
     cout << setfill(' ');
     Textcolor(10);
-    gotoxy(55, 8); cout << setw(23) << right << "---PROFILE---\n\n";
+    gotoxy(52, 8); cout << setw(23) << right << "---PROFILE---\n\n";
     Textcolor(NORMAL);
 
     Student* student = nullptr;
@@ -2091,16 +2094,16 @@ void Student_profile(Year* year,string username){
         curYear = curYear->pNext_Year;
     }
     if(student == NULL){
-        gotoxy(55, 10);
+        gotoxy(52, 10);
         cout << setw(20) << right << "No data.\n";
     }
     else{
-        gotoxy(55, 10); cout << setw(14) << left << "No" << " : " << student->No << endl;
-        gotoxy(55, 11); cout << setw(14) << left << "Student ID" << " : "<< student->StudentID << endl;
-        gotoxy(55, 12); cout << setw(14) << left << "Full name" << " : " << student->LastName << " " << student->FirstName << endl;
-        gotoxy(55, 13); cout << setw(14) << left << "Gender" << " : " << student->Gender << endl;
-        gotoxy(55, 14); cout << setw(14) << left << "Date of Birth" << " : " << student->Date_of_Birth << endl;
-        gotoxy(55, 15); cout << setw(14) << left << "SocialID" << " : " << student->SocialID;
+        gotoxy(52, 10); cout << setw(14) << left << "No" << " : " << student->No << endl;
+        gotoxy(52, 11); cout << setw(14) << left << "Student ID" << " : "<< student->StudentID << endl;
+        gotoxy(52, 12); cout << setw(14) << left << "Full name" << " : " << student->LastName << " " << student->FirstName << endl;
+        gotoxy(52, 13); cout << setw(14) << left << "Gender" << " : " << student->Gender << endl;
+        gotoxy(52, 14); cout << setw(14) << left << "Date of Birth" << " : " << student->Date_of_Birth << endl;
+        gotoxy(52, 15); cout << setw(14) << left << "SocialID" << " : " << student->SocialID;
     }
 }
 
@@ -2192,20 +2195,20 @@ void COURSE_PAGE(Year* &year,Semester* &sem,int locate_x, int locate_y, int numb
 			else if (var == 13) {
 				if (cell == 1){
                     system("cls");
-                    Print_Course(sem);
+                    Print_Course(year, sem);
                     Create_Course(year, sem);
                     save_course_main(year);
                     cin.ignore(1000, '\n');
                     getchar();
                 }else if(cell == 2){
                     system("cls");
-                    Print_Course(sem);
+                    Print_Course(year, sem);
                     cin.ignore(1000, '\n');
                     getchar();
                 }
                 else if(cell == 3){
                     system("cls");
-                    Print_Course(sem);
+                    Print_Course(year, sem);
                     if (sem->pCourse == nullptr)
                         cout << "You need to add a course to update it.";
                     else
@@ -2216,7 +2219,7 @@ void COURSE_PAGE(Year* &year,Semester* &sem,int locate_x, int locate_y, int numb
                     
                 }else if(cell == 4){
                     system("cls");
-                    Print_Course(sem);
+                    Print_Course(year, sem);
                     if (sem->pCourse == nullptr){
                         cout << "You need to add a course to delete it.";
                     }
@@ -2229,7 +2232,7 @@ void COURSE_PAGE(Year* &year,Semester* &sem,int locate_x, int locate_y, int numb
                     save_course_main(year);
                 }else if(cell == 5){
                     system("cls");
-                    Print_Course(sem);
+                    Print_Course(year, sem);
                     if (sem->pCourse == nullptr){
                         cout << "You need to add a course to view its students.";
                     }
@@ -2240,7 +2243,7 @@ void COURSE_PAGE(Year* &year,Semester* &sem,int locate_x, int locate_y, int numb
                     }
                 }else if(cell == 6){
                     system("cls");
-                    Print_Course(sem);
+                    Print_Course(year, sem);
                     if (sem->pCourse == nullptr)
                         cout << "You need to create a course to import its scoreboard.\n";
                     else
@@ -2250,7 +2253,7 @@ void COURSE_PAGE(Year* &year,Semester* &sem,int locate_x, int locate_y, int numb
                     save_course_main(year);
                 }else if(cell == 7){
                     system("cls");
-                    Print_Course(sem);
+                    Print_Course(year, sem);
                     if (sem->pCourse == nullptr){
                         cout << "You need to create a course to view its scoreboard.\n";
                     }
@@ -2261,7 +2264,7 @@ void COURSE_PAGE(Year* &year,Semester* &sem,int locate_x, int locate_y, int numb
                     getchar();
                 }else if(cell == 8){
                     system("cls");
-                    Print_Course(sem);
+                    Print_Course(year, sem);
                     if (sem->pCourse == nullptr)
                         cout << "You need to create a course to export its scoreboard.\n";
                     else
@@ -2270,7 +2273,7 @@ void COURSE_PAGE(Year* &year,Semester* &sem,int locate_x, int locate_y, int numb
                     getchar();
                 }else if(cell == 9){
                     system("cls");
-                    Print_Course(sem);
+                    Print_Course(year, sem);
                     if (sem->pCourse == nullptr)
                         cout << "You need to create a course to update its scoreboard.\n";
                     else{
@@ -2721,6 +2724,7 @@ void YEAR_PAGE(Year* &year, Account* account_head, int locate_x, int locate_y, i
 			else if (var == 13) {
 				if (cell == 1) {
                     system("cls");
+
                     Print_Year(year);
                     if (year) {
                         calcu_oGPA_main(year);
@@ -2866,7 +2870,7 @@ void COURSE_STU_PAGE(Year* &year,Semester* &sem, User U, int locate_x, int locat
 			else if (var == 13) {
 				if (cell == 1){
                     system("cls");
-                    Print_Course(sem); // ko in ra cac mon hoc
+                    Print_Course(year, sem); // ko in ra cac mon hoc
                     enroll_main(year, sem, U.username, S);  // continue
                     save_course_main(year);
                     cin.ignore(1000, '\n');
@@ -2882,7 +2886,8 @@ void COURSE_STU_PAGE(Year* &year,Semester* &sem, User U, int locate_x, int locat
                     getchar();
                 }else if(cell == 3){
                     system("cls");
-                    Print_Course(sem);
+                    // Print_Course(year, sem);
+                    View_Enrolled_Course_main(year, U.username);
                     Delete_Enrolled_Course_main(year, sem, U.username, S);
                     save_course_main(year);
                     cin.ignore(1000, '\n');
@@ -3169,26 +3174,30 @@ void CHANGE_PASS_PAGE(Year* &year, Account* account_head, User &U, int locate_x,
                     }
                 }
                 else if(cell == 3){
-                    system("cls");           
-                    cout << "Enter your username: "; cin >> user_change;
-                    cout << "Enter old password: ";
-                    cin >> password;
+                    system("cls");    
+                   
+                    Textcolor(10);
+                    gotoxy(52, 8); cout << setfill(' ') << setw(30) << right << "---CHANGE PASSWORD---";
+                    Textcolor(NORMAL);   
+
+                    gotoxy(52, 10); cout << "Enter your username: "; cin >> user_change;
+                    gotoxy(52, 11); cout << "Enter old password: "; cin >> password;
                     
                     if (user_change == U.username && password == U.password){
-                        cout << "Enter new password: ";
+                        gotoxy(52, 12); cout << "Enter new password: ";
                         cin >> U.password;
 
                         change_password(account_head, U);
                         save_account_list(account_head); // save account
                         Textcolor(SUCCESS);
-                        cout << "Password has been changed.\n";
+                        gotoxy(52, 14); cout << "Password has been changed.\n";
                         Textcolor(NORMAL);
                         cin.ignore(1000, '\n');
                         getchar();
-                    }
+                    } 
                     else{
                         Textcolor(_ERROR);
-                        cout << "Username or password is incorrect.\n";
+                        gotoxy(52, 13); cout << "Username or password is incorrect.\n";
                         Textcolor(NORMAL);
                         cin.ignore(1000, '\n');
                         getchar();                            
@@ -3260,14 +3269,25 @@ void LOGIN_PAGE(Year* &year, Account* account_head, User U, int locate_x,int loc
 			else if (var == 13) {
 				if (cell == 1) {
                     system("cls");
+
+                    gotoxy(52, 8);
+                    Textcolor(10);
+                    cout << setfill(' ') << setw(23) << right << "---LOG IN---";
+                    Textcolor(NORMAL);
+
+                    gotoxy(52, 10);
                     cout << "Enter username: ";
                     cin >> U.username;
+
+                    gotoxy(52, 11);
                     cout << "Enter password: ";
                     cin >> U.password;
+
                     if (account_check(account_head, U)){
                         Textcolor(SUCCESS);
-                        cout << "Log in successfully.\n";
+                        gotoxy(52, 13); cout << "Log in successfully.\n";
                         Textcolor(NORMAL);
+
                         cin.ignore(1000, '\n');
                         getchar();
                         system("cls");
@@ -3276,8 +3296,9 @@ void LOGIN_PAGE(Year* &year, Account* account_head, User U, int locate_x,int loc
                     }
                     else{
                         Textcolor(_ERROR);
-                        cout << "Username or password is incorrect.\n";
+                        gotoxy(52, 13); cout << "Username or password is incorrect.\n";
                         Textcolor(NORMAL);
+
                         cin.ignore(1000, '\n');
                         getchar();
                     }
