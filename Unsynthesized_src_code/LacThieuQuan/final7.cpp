@@ -1198,7 +1198,7 @@ bool Check_quantity(Student* student){
         count++;
         pCur = pCur->pNext_Cur_Cour;
     }
-    if(count < 3) return true; // "< 3" --> 2 --> allow to enroll--> 3 course
+    if(count < 5) return true; // "< 3" --> 2 --> allow to enroll--> 3 course
     return false;   //"<= 3" --> 3 --> allow to enroll --> 4 course
 }
 bool Check_Session(Course* course_regis,Student* student){
