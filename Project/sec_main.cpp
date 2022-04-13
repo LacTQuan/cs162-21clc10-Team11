@@ -261,7 +261,7 @@ void Print_Course(Year* year, Semester* sem) {
     }
     else{
         Course* pCourse = sem->pCourse;
-        cout << setfill('_') << setw(127) << "\n";
+        cout << setfill('_') << setw(148) << "_" << endl;
         cout << setfill(' ') << setw(10) << left << " ID" << " | ";
         cout << setw(7) << left << "Credits" << " | ";
         cout << setw(8) << left << "Capacity" << " | ";
