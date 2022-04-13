@@ -177,7 +177,7 @@ void Create_Course(Year* year, Semester* sem) {
     Textcolor(SUCCESS);
     cout << "Courses added:\n";
     Textcolor(NORMAL);
-    cout << setfill('_') << setw(128) << left << "_" << endl;
+    cout << setfill('_') << setw(148) << left << "_" << endl;
     cout << setfill(' ') << setw(10) << left << " ID" << " | ";
     cout << setw(7) << left << "Credits" << " | ";
     cout << setw(8) << left << "Capacity" << " | ";
