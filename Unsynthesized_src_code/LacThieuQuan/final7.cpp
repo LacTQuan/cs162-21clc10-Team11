@@ -18,6 +18,7 @@ using namespace std;
 #define NORMAL 11
 #define BOX 11
 
+
 int HOME = 0;
 int LOG_OUT = 0;
 //right
@@ -116,7 +117,6 @@ void Textcolor(int x){
 	SetConsoleTextAttribute(mau, x);
 }
 
-Year* Current_Year = nullptr;
 int convert_to_int(string s) {
     int res = 0;
     for (int i = 0; i < s.length(); i++)
