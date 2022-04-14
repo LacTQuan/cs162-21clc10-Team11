@@ -350,28 +350,3 @@ void Enroll_Course(Course* &course_regis, Student* &student){
     }
 }
 
-//enroll main
-void enroll_main(Year* &year, Semester* &semester){
-    string studentID;
-    cout<<"StudentID "; cin>>studentID;
-
-    Student* student = find_student_in_many_classes(year, studentID);
-    if(student == NULL){
-        cout<<"invalid student"<<endl;
-    cin.ignore();
-    getchar();
-        return;
-    }
-    //view all course
-    string course_name;
-    cout<<"Course you want to choose "; cin>>course_name;
-    Course* course_regis = find_course_in_many_subjects(semester,course_name);
-    if(course_regis == NULL){
-        cout<<"invalid course_register"<<endl;
-        cin.ignore();
-        getchar();
-        return;
-    }
-
-    Enroll_Course(course_regis,student);
-}
