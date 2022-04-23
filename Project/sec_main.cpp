@@ -314,14 +314,14 @@ void Print_Course(Year* year, Semester* sem) {
         }
     }
 }
-Course* find_Course(Course* pCourse, string name) { 
+Course* find_Course(Course* pCourse, string name) {
     if (!pCourse) return nullptr;
     if (pCourse->CourseID == name) return pCourse;
     while (pCourse->pNext_Course && pCourse->pNext_Course->CourseID != name)
         pCourse = pCourse->pNext_Course;
     if(pCourse->pNext_Course && pCourse->pNext_Course->CourseID == name)
-        return pCourse->pNext_Course;
-    else
+        return pCourse;
+    else   
         return nullptr;
 }
 // find student
@@ -370,7 +370,7 @@ void Delete_Course(Semester* sem) {
     cout << "Enter course ID to delete: " ;
     cin >> s;
     Course* cour = find_Course(sem->pCourse, s);
-    if (cour == nullptr){
+    if (!cour || (cour->CourseID != s && !cour->pNext_Course)) {
         Textcolor(_ERROR);
         cout << "Invalid course.";
         Textcolor(NORMAL);
@@ -489,7 +489,7 @@ void Update_Course(Semester* sem){
     string s = "";
     cout << "Enter course ID to update: " ;
     cin >> s;
-    Course* cour = find_Course(sem->pCourse, s);
+    Course* cour = find_course_in_many_subjects(sem, s);
     if (cour == nullptr){
         Textcolor(_ERROR);
         cout << "Invalid course.";
@@ -1249,7 +1249,7 @@ void Assign_Mark(Year* year,string course_id, string Student_ID, double total, d
     }
 }
 void Create_Mark(Year* year, Semester* sem, Course* cour) {
-    string s =  year->name + "_" + sem->name + "_" + cour->CourseID + ".csv";
+    string s =  year->name + "_HK" + sem->name + "_" + cour->CourseID + ".csv";
     ofstream fout(s);
     fout << "No,ID,Full name,Total mark,Final mark,Midterm mark,Other mark";
     Student_Course* Stu_Cour = cour->pStudent_Course;
@@ -1282,8 +1282,8 @@ double convert_to_double(string s) {
     res = int(res * 10) / 10.0; // lam tron 1 chu so thap phan
     return res;
 }
-void Import_Scoreboard(Year* year, Course* cour) {
-    string s = cour->CourseID + ".csv";
+void Import_Scoreboard(Year* year, Semester* sem, Course* cour) {
+    string s = year->name+"_HK"+sem->name+"_"+cour->CourseID + ".csv";
     ifstream fin(s);
     fin.ignore(1000, '\n');
     while (fin.eof() == false) {
@@ -1341,8 +1341,10 @@ void Create_mark_main(Year* year,Semester* sem){ // Import scoreboard
         Textcolor(NORMAL);
         return;                                      
     }
-    Create_Mark(year, sem, course_regis);
-    Import_Scoreboard(year, course_regis);
+    //Create_Mark(year, sem, course_regis);
+    Import_Scoreboard(year, sem, course_regis);
+    save_course_main(year);
+    save_class_student_main(year);
     Textcolor(SUCCESS);  
     cout << "Scoreboard imported.";
     Textcolor(NORMAL);
@@ -2153,7 +2155,7 @@ void COURSE_PAGE(Year* &year,Semester* &sem,int locate_x, int locate_y, int numb
                     if (sem->pCourse == nullptr)
                         cout << "You need to create a course to import its scoreboard.\n";
                     else
-                        Create_mark_main(year,sem);
+                        Create_mark_main(year, sem);
                     cin.ignore(1000, '\n');
                     getchar();
                     save_course_main(year);
@@ -2302,7 +2304,7 @@ void SEMESTER_PAGE(Year* &year,int locate_x, int locate_y, int number_of_cells, 
                             getchar();                       
                         }else{
                             system("cls");
-                            string COURSE_name_list_of_boxs[] = { "Create course","View course","Update course","Delete course","View student","Create mark","View scoreboard","Export course","Update result","Time registration","Home","Return" };
+                            string COURSE_name_list_of_boxs[] = { "Create course","View course","Update course","Delete course","View student","Import Scoreboard","View scoreboard","Export course","Update result","Time registration","Home","Return" };
                             COURSE_PAGE(year,import_sem,locate_x, 2, 12, COURSE_name_list_of_boxs,S); // set locate_y = 2
                         }
                         
