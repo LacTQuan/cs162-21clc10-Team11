@@ -617,7 +617,7 @@ void Print_Cur_Course(Cur_Course* cur_course) {
         cout << setw(9) << left << "Start day" << " | ";
         cout << setw(8) << left << "End day" << '\n';
         
-        cout << setfill('_') << setw(13) << right << "|";
+        cout << setfill('_') << setw(12) << right << "|";
         cout << setw(10) << right << "|";
         cout << setw(11) << right << "|";
         cout << setw(43) << right << "|";
@@ -638,7 +638,7 @@ void Print_Cur_Course(Cur_Course* cur_course) {
             cout << setw(9) << left << cur_course->Start_Day << " | ";
             cout << setw(8) << left << cur_course->End_Day << '\n';
 
-            cout << setw(13) << right << "|";
+            cout << setw(12) << right << "|";
             cout << setw(10) << right << "|";
             cout << setw(11) << right << "|";
             cout << setw(43) << right << "|";
@@ -651,7 +651,7 @@ void Print_Cur_Course(Cur_Course* cur_course) {
             cur_course = cur_course->pNext_Cur_Cour;
         }  
         // End of table
-        cout << setfill('_') << setw(13) << right << "|";
+        cout << setfill('_') << setw(12) << right << "|";
         cout << setw(10) << right << "|";
         cout << setw(11) << right << "|";
         cout << setw(43) << right << "|";
@@ -661,7 +661,6 @@ void Print_Cur_Course(Cur_Course* cur_course) {
         cout << setw(11) << right << '\n';
     }
 }
-//18
 
 // 20
 void View_Student_In_Course(Semester* sem){
@@ -786,7 +785,9 @@ void View_Enrolled_Course_main(Year*& year, string studentID) {
         Textcolor(NORMAL);
         return;
     }
-    View_Enrolled_Course(year, student);
+//    View_Enrolled_Course(year, student);
+	Print_Cur_Course(student->pCur_Cour);
+    
 }
 void Delete_Enrolled_Course(Student*& student, Course*& course) {
     Cur_Course* pCur1 = student->pCur_Cour;
@@ -1530,16 +1531,14 @@ void View_Class_Scoreboard_main(Class* classes){
     }
 }
 //26
-void Student_View_Scoreboard(Year* year, string studentID){
+void Student_View_Scoreboard(Year* year,Semester* sem, string studentID){
     cout << "Your scoreboard:\n";
     Student* student = find_student_in_many_classes(year, studentID);
     if (student == nullptr){
         cout << "\tCannot find student ID.\n";
     }
-    else if(student->pCur_Cour == NULL){
-        cout << "\tYou haven't enrolled in any courses.\n";
-    } 
     else{
+        /*
         Cur_Course* pCur = student->pCur_Cour;
         cout << "____________________________________________________________________________\n";
         cout << "                Course name               | Midterm | Final | Other | Total \n";
@@ -1553,10 +1552,30 @@ void Student_View_Scoreboard(Year* year, string studentID){
             cout << setw(5)  << right << pCur->mark.Total << "\n";
             pCur = pCur->pNext_Cur_Cour;
             cout << "__________________________________________|_________|_______|_______|_______\n"; 
-        }    
+        }
+        */ 
+        cout << "____________________________________________________________________________\n";
+        cout << "                Course name               | Midterm | Final | Other | Total \n";
+        cout << "__________________________________________|_________|_______|_______|_______\n";
+        cout << setfill(' ');  
+        Course* tmpCour = sem->pCourse;
+        while(tmpCour != NULL){
+            Student_Course* tmpStuCour = tmpCour->pStudent_Course;
+            while(tmpStuCour != NULL){
+                if(tmpStuCour->StudentID == studentID){
+                    cout << ' ' << setw(40) << left << tmpCour->Course_Name << " | ";
+                    cout << setw(7)  << right << tmpStuCour->mark.Midterm << " | ";
+                    cout << setw(5)  << right << tmpStuCour->mark.Final << " | ";
+                    cout << setw(5)  << right << tmpStuCour->mark.Other << " | ";
+                    cout << setw(5)  << right << tmpStuCour->mark.Total << "\n";
+                    break;
+                }else tmpStuCour = tmpStuCour->pNext_Student_Course;
+            }
+            tmpCour = tmpCour->pNext_Course;
+        }
+        cout << "__________________________________________|_________|_______|_______|_______\n";
     }
 }
-
 //delete all node
 void delete_cur_course(Student* &student){
     if(student->pCur_Cour == NULL) return;
@@ -1613,18 +1632,20 @@ void delete_all_node(Year* &year){
         delete pCur_Year;
     }
 }
-void del_cur_course_last_sem(Year* year) {
-    while (year) {
-        Class* _class = year->pClass;
+void del_cur_course_last_sem(Year* &year) {
+	Year* tmpY=year;
+    while (tmpY) {
+        Class* _class = tmpY->pClass;
         while (_class) {
             Student* st = _class->pStudent;
             while (st) {
                 delete_cur_course(st);
+                st->pCur_Cour=nullptr;
                 st = st->pNext_Student;
             }
             _class = _class->pNext_Class;
         }
-        year = year->pNext_Year;
+        tmpY = tmpY->pNext_Year;
     }
 }
 // Load data
@@ -2053,6 +2074,15 @@ void box(int x,int y,int width, int height, int textcolor,int bcolor ,string tex
 
 //staff
 void COURSE_PAGE(Year* &year,Semester* &sem,int locate_x, int locate_y, int number_of_cells, string COURSE_name_list_of_boxs[],Registration_Session &S) {
+	// print chosen year sem
+    gotoxy(62,5);
+    Textcolor(10);
+    cout << "SCHOOL YEAR " << year->name << endl;
+    gotoxy(62,6);
+    cout << "   SEMESTER " << sem->name << endl;
+    Textcolor(NORMAL);
+	
+
 
 	for (int i = 0; i < number_of_cells; i++) {
 		box(locate_x, locate_y + i * 3, 20, 2, 10, 11, COURSE_name_list_of_boxs[i]);
@@ -2205,7 +2235,16 @@ void COURSE_PAGE(Year* &year,Semester* &sem,int locate_x, int locate_y, int numb
 				}
 				else if (cell == 12) break;
 
-                system("cls");  // print box for all
+                system("cls");
+                // print chosen year sem
+    			gotoxy(62,5);
+    			Textcolor(10);
+    			cout << "SCHOOL YEAR " << year->name << endl;
+    			gotoxy(62,6);
+    			cout << "   SEMESTER " << sem->name << endl;
+    			Textcolor(NORMAL);
+                
+				// print box for all
                 for (int i = 0; i < number_of_cells; i++) {
 		            box(locate_x, locate_y + i * 3, 20, 2, 10, 11, COURSE_name_list_of_boxs[i]);
 	            }        
@@ -2305,7 +2344,7 @@ void SEMESTER_PAGE(Year* &year,int locate_x, int locate_y, int number_of_cells, 
                         }else{
                             system("cls");
                             string COURSE_name_list_of_boxs[] = { "Create course","View course","Update course","Delete course","View student","Import Scoreboard","View scoreboard","Export course","Update result","Time registration","Home","Return" };
-                            COURSE_PAGE(year,import_sem,locate_x, 2, 12, COURSE_name_list_of_boxs,S); // set locate_y = 2
+                            COURSE_PAGE(year,import_sem,locate_x, 10, 12, COURSE_name_list_of_boxs,S); // set locate_y = 2
                         }
                         
                         system("cls");
@@ -2802,7 +2841,7 @@ void COURSE_STU_PAGE(Year* &year,Semester* &sem, User U, int locate_x, int locat
                     getchar();
                 }else if(cell == 4){
                     system("cls");
-                    Student_View_Scoreboard(year, U.username);
+                    Student_View_Scoreboard(year,sem, U.username);
                     cin.ignore(1000, '\n');
                     getchar();
                 }

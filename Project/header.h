@@ -199,7 +199,7 @@ void delete_student(Class* &classes);
 void delete_student_cour(Course* &course);
 void delete_course(Semester* &sem);
 void delete_all_node(Year* &year);
-void del_cur_course_last_sem(Year* year);
+void del_cur_course_last_sem(Year* &year);
 // Load data
 Class* find_class(Year* year, string name);
 Year* load_year(Year* &year, string name);
