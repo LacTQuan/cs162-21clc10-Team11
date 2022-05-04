@@ -604,8 +604,9 @@ void Print_Semester(Year* year) {
     cout << endl;
 }
 void Print_Cur_Course(Cur_Course* cur_course) {
+	cout << "Courses you will study this semester:\n";
     if (cur_course == nullptr)
-        cout << "No course to display" << endl; 
+        cout << "\tYou haven't enrolled in any courses yet.\n"; 
     else {
         cout << setfill('_') << setw(147) << '\n';
         cout << setfill(' ') << setw(10) << left << " ID" << " | ";
@@ -1458,11 +1459,12 @@ void update_student_result(Year* &year, Semester* &sem){
     }
 }
 //25
-void View_Class_Scoreboard_main(Class* classes){ 
+void View_Class_Scoreboard_main(Class* classes){
+	cout << "Scoreboard of class " << classes->name << ":\n";
     if (classes->pStudent == NULL){
-        cout << "No student has been added in the class.\n";
+        cout << "\tNo student has been added in the class.\n";
         return;
-    }   
+    } 
     cout<<"________________________________________________________________________________________________________________________________\n";
     cout<<" Student ID |             Full name              |                                    Marks                                     \n";
     cout<<"____________|____________________________________|______________________________________________________________________________\n";
